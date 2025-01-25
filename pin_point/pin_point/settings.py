@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -118,10 +119,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -131,3 +128,15 @@ LEAFLET_CONFIG = {
     'MIN_ZOOM': 3,
     'MAX_ZOOM': 18,
 }
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+GDAL_LIBRARY_PATH = r"C:\Users\Robm1\anaconda3\envs\django_gis\Library\bin\gdal.dll"
+os.environ["GDAL_LIBRARY_PATH"] = GDAL_LIBRARY_PATH
+os.environ["GDAL_DATA"] = r"C:\Users\Robm1\anaconda3\envs\django_gis\Library\share\gdal"
+os.environ["PROJ_LIB"] = r"C:\Users\Robm1\anaconda3\envs\django_gis\Library\share\proj"
+os.environ["PATH"] += r";C:\Users\Robm1\anaconda3\envs\django_gis\Library\bin"

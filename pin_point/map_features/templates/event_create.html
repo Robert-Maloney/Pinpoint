@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+</head>
+<body>
+    <h1>Create a New Event</h1>
+    <form id="event-form" method="POST" action="">
+        {% csrf_token %}
+        <label for="name">Event Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea><br>
+
+        <label for="date_time">Date & Time:</label>
+        <input type="datetime-local" id="date_time" name="date_time" required><br>
+
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" value="{{ latitude }}" readonly><br>
+
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" value="{{ longitude }}" readonly><br>
+
+        <button type="submit">Create Event</button>
+    </form>
+</body>
+</html>

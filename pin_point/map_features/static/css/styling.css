@@ -1,0 +1,91 @@
+body {
+   background-color: #000;
+   color: white;
+   font-family: Arial, sans-serif;
+   text-align: center;
+   margin: 0;
+   padding: 0;
+   height: 100vh;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+}
+.header {
+   font-size: 2em;
+   padding: 10px 0;
+   width: 100%;
+   text-align: center;
+   position: relative;
+   background-color: #111;
+   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2);
+}
+.circle {
+   position: absolute;
+   top: 15px;
+   right: 20px;
+   width: 35px;
+   height: 35px;
+   background-color: grey;
+   border-radius: 50%;
+}
+.content {
+   flex: 1;
+   width: 100%;
+   max-width: 1200px;
+   margin: 0 auto;
+   padding: 20px;
+}
+.bottom-nav {
+   display: flex;
+   justify-content: space-around;
+   background-color: #000;
+   padding: 15px 0;
+   position: fixed;
+   bottom: 0;
+   width: 100%;
+   box-shadow: 0 -2px 5px rgba(255, 255, 255, 0.2);
+}
+.bottom-nav img {
+   width: 50px;
+   height: 50px;
+   filter: invert(1);
+}
+
+.bottom-nav {
+   display: flex;
+   justify-content: space-around;
+   align-items: center;
+   background-color: #000;
+   padding: 15px 0;
+   position: fixed;
+   bottom: 0;
+   width: 100%;
+}
+
+.bottom-nav a {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.bottom-nav img {
+   width: 50px;  /* Set the desired width */
+   height: 50px; /* Set the desired height */
+   object-fit: cover; /* Ensures the image fills the box without distortion */
+   filter: invert(1); /* Keep white color for dark background */
+}
+.map-container {
+   width: 100%;
+   max-width: 600px;
+   height: 400px; /* Ensure there's a height */
+   margin: 20px auto;
+   border-radius: 15px;
+   overflow: hidden;
+   box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+   background: #ccc; /* Placeholder before map loads */
+}
+
+#map {
+   width: 100%;
+   height: 100%;
+}
