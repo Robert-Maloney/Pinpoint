@@ -4,13 +4,15 @@
 
 {% block content %}
     <div class="container">
+        <br>
         <h2>Login</h2>
+        <br>
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Login</button>
         </form>
-
+        <br>
         <p>Not registered?</p>
         <a href="{% url 'register' %}" class="btn-register">Create an Account</a>
     </div>
