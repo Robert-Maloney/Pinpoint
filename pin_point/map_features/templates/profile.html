@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <h2>User Profile</h2>
+        
+        <div class="profile-container">
+            {% if user.profile_photo and user.profile_photo.url %}
+                <img src="{{ user.profile_photo.url }}" alt="Profile Photo" class="profile-img">
+            {% else %}
+                <img src="{% static 'icons/default_profile.jpg' %}" alt="Default Profile" class="profile-img">
+            {% endif %}
+        </div>
+
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Phone:</strong> {{ user.phone }}</p>
+
+        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+    </div>
+{% endblock %}

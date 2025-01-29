@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <h2>Upcoming Events</h2>
+        <ul>
+            {% for event in events %}
+                <li>
+                    <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
+                    - {{ event.date_time|date:"D, M d Y H:i" }}
+                </li>
+            {% empty %}
+                <p>No events available.</p>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

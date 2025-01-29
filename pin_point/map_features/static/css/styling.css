@@ -10,24 +10,44 @@ body {
    flex-direction: column;
    justify-content: space-between;
 }
+
+/* Header style */
 .header {
-   font-size: 2em;
-   padding: 10px 0;
-   width: 100%;
-   text-align: center;
-   position: relative;
-   background-color: #111;
-   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2);
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 10px 20px;
+   background-color: #000000;
+   border-bottom: 1px solid #ddd;
 }
-.circle {
-   position: absolute;
-   top: 15px;
-   right: 20px;
-   width: 35px;
-   height: 35px;
-   background-color: grey;
+
+.header-logo {
+   height: 50px; 
+   align-items: center;
+
+}
+
+.header-user {
+   display: flex;
+   align-items: center;
+   margin-left: auto; 
+}
+
+.username-text {
+   font-size: 16px;
+   margin-right: 10px;
+   color: rgb(255, 255, 255);
+}
+
+.profile-img {
+   width: 40px;
+   height: 40px;
    border-radius: 50%;
+   object-fit: cover;
+   border: 2px solid #ddd;
 }
+
+/* Main section style */
 .content {
    flex: 1;
    width: 100%;
@@ -35,6 +55,9 @@ body {
    margin: 0 auto;
    padding: 20px;
 }
+
+/* Bottom navigation style */
+
 .bottom-nav {
    display: flex;
    justify-content: space-around;
@@ -69,20 +92,23 @@ body {
 }
 
 .bottom-nav img {
-   width: 50px;  /* Set the desired width */
-   height: 50px; /* Set the desired height */
-   object-fit: cover; /* Ensures the image fills the box without distortion */
-   filter: invert(1); /* Keep white color for dark background */
+   width: 50px;
+   height: 50px;
+   object-fit: cover;
+   filter: invert(1); 
 }
+
+/* Map style */
+
 .map-container {
    width: 100%;
    max-width: 600px;
-   height: 400px; /* Ensure there's a height */
+   height: 500px; 
    margin: 20px auto;
    border-radius: 15px;
    overflow: hidden;
    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-   background: #ccc; /* Placeholder before map loads */
+   background: #ccc; 
 }
 
 #map {

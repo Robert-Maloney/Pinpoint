@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %} User Signup {% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>User Signup</h2>
+        <form action="." method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+{% endblock %}

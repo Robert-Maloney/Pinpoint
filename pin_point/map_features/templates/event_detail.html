@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <h2>{{ event.name }}</h2>
+        <p><strong>Description:</strong> {{ event.description }}</p>
+        <p><strong>Date & Time:</strong> {{ event.date_time|date:"D, M d Y H:i" }}</p>
+        <p><strong>Location:</strong> {{ event.location_name }}</p>
+        <p><strong>Coordinates:</strong> ({{ event.latitude }}, {{ event.longitude }})</p>
+        <p><strong>Created by:</strong> {{ event.created_by.username }}</p>
+        <a href="{% url 'event_list' %}">Back to Events</a>
+    </div>
+{% endblock %}
