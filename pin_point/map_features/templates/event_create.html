@@ -1,30 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Event</title>
-</head>
-<body>
-    <h1>Create a New Event</h1>
-    <form id="event-form" method="POST" action="">
-        {% csrf_token %}
-        <label for="name">Event Name:</label>
-        <input type="text" id="name" name="name" required><br>
+{% extends 'base.html' %}
 
-        <label for="description">Description:</label>
-        <textarea id="description" name="description"></textarea><br>
+{% block content %}
+    {% if user.is_authenticated %}
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card p-4 bg-dark text-white" style="width: 400px;">
+            <h2 class="text-center">Create Event</h2>
+            <br>
+            <form method="POST">
+            {% csrf_token %}
+                <label for="name">Event Name:</label>
+                <input type="text" name="name" required>
 
-        <label for="date_time">Date & Time:</label>
-        <input type="datetime-local" id="date_time" name="date_time" required><br>
+                <label for="description">Description:</label>
+                <textarea name="description"></textarea>
 
-        <label for="latitude">Latitude:</label>
-        <input type="text" id="latitude" name="latitude" value="{{ latitude }}" readonly><br>
+                <label for="date_time">Date & Time:</label>
+                <input type="datetime-local" name="date_time" required>
 
-        <label for="longitude">Longitude:</label>
-        <input type="text" id="longitude" name="longitude" value="{{ longitude }}" readonly><br>
+                <label for="latitude">Latitude:</label>
+                <input type="text" name="latitude" value="{{ latitude }}" readonly>
 
-        <button type="submit">Create Event</button>
-    </form>
-</body>
-</html>
+                <label for="longitude">Longitude:</label>
+                <input type="text" name="longitude" value="{{ longitude }}" readonly>
+
+                <button type="submit">Create Event</button>
+            </form>
+        </div>
+    </div>
+        {% else %}
+            <p>You must <a href="{% url 'login' %}">log in</a> to create an event.</p>
+        {% endif %}
+    {% endblock %}

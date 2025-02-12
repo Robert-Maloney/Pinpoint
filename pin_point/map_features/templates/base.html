@@ -6,43 +6,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PinPoint</title>
 
+    {% load static %}
+
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/styling.css' %}">
-
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap & jQuery -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styling.css' %}">
 </head>
+
 <body>
-
-    <!-- Header -->
-    <div class="header">
-        PinPoint
-        <div class="circle"></div>
+    <div class="header d-flex justify-content-between align-items-center px-3 py-2">
+        <img src="{% static 'icons/header.png' %}" alt="PinPoint Logo" class="header-logo">
+    
+        {% if user.is_authenticated %}
+            <div class="header-user d-flex align-items-center">
+                <span class="username-text">Hello, {{ user.username }}</span>
+                <a href="{% url 'profile' %}" class="profile-link">
+                    {% if user.profile_photo %}
+                        <img src="{{ user.profile_photo.url }}" alt="Profile Photo" class="profile-img">
+                    {% else %}
+                        <img src="{% static 'icons/default_profile.jpg' %}" alt="Default Profile" class="profile-img">
+                    {% endif %}
+                </a>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}" class="login-btn">Login</a>
+        {% endif %}
     </div>
+    
 
-    <!--  Content Section -->
     <div class="content">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Bottom Nav bar -->
     <div class="bottom-nav">
         <a href="#"><img src="{% static 'icons/friends.jpg' %}" alt="Friends"></a>
         <a href="#"><img src="{% static 'icons/pin.png' %}" alt="Pin"></a>
-        <a href="#"><img src="{% static 'icons/home.png' %}" alt="Home"></a>
+        <a href="{% url 'index' %}"><img src="{% static 'icons/home.png' %}" alt="Home"></a>
         <a href="#"><img src="{% static 'icons/chat.png' %}" alt="Chat"></a>
         <a href="#"><img src="{% static 'icons/gallery.png' %}" alt="Gallery"></a>
     </div>
 
+        
 </body>
 </html>
