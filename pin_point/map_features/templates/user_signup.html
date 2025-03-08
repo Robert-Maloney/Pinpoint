@@ -1,19 +1,28 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %} User Signup {% endblock %}
 
 {% block content %}
-    <div class="container d-flex justify-content-center align-items-center vh-100">
-        <div class="card p-4 bg-dark text-white" style="width: 400px;">
-            <h2 class="text-center">User Signup</h2>
-            <br>
-            <form action="." method="POST">
-                {% csrf_token %}
-                <div class="form-group">
-                    {{ form.as_p }}
-                </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">Register</button>
-            </form>
-        </div>
+<div class="signup-container">
+    <div class="signup-card">
+        <h2>Create an Account</h2>
+        
+        <form action="." method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            
+            <button type="submit" class="btn-primary">
+                Register
+            </button>
+        </form>
+
+        <p>
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </p>
     </div>
+</div>
+<br>
 {% endblock %}
