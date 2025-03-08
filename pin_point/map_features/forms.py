@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import User, Event
 from django.db import transaction
 
 class UserSignupForm(UserCreationForm):
@@ -21,3 +21,19 @@ class UserSignupForm(UserCreationForm):
         user.is_admin = False
         user.save()
         return user
+
+class EventForm(forms.ModelForm):
+    invitees = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    class Meta:
+        model = Event
+        fields = ['name', 'description', 'date_time', 'location_name', 'latitude', 'longitude', 'private', 'invitees']
+        widgets = {
+            'date_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'latitude': forms.TextInput(attrs={'readonly': True}),
+            'longitude': forms.TextInput(attrs={'readonly': True}),
+        }

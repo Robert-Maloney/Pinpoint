@@ -50,7 +50,7 @@
 
     <div class="bottom-nav">
         <a href="#"><img src="{% static 'icons/friends.jpg' %}" alt="Friends"></a>
-        <a href="#"><img src="{% static 'icons/pin.png' %}" alt="Pin"></a>
+        <a href="{% url 'event_list' %}"><img src="{% static 'icons/pin.png' %}" alt="Pin"></a>
         <a href="{% url 'index' %}"><img src="{% static 'icons/home.png' %}" alt="Home"></a>
         <a href="#"><img src="{% static 'icons/chat.png' %}" alt="Chat"></a>
         <a href="#"><img src="{% static 'icons/gallery.png' %}" alt="Gallery"></a>

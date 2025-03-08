@@ -2,17 +2,36 @@
 {% block content %}
     <div class="container">
         <br>
-        <h2>Upcoming Events</h2>
+        <h2>Your Events</h2>
         <br>
         <ul>
-            {% for event in events %}
-                <li>
-                    <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
-                    - {{ event.date_time|date:"D, M d Y H:i" }}
-                </li>
-            {% empty %}
-                <p>No events available.</p>
-            {% endfor %}
-        </ul>
-    </div>
+            {% if user_created_events %}
+            <ul>
+                {% for event in user_created_events %}
+                    <li>
+                        <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
+                        - {{ event.date_time|date:"D, M d Y H:i" }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You haven't created any events.</p>
+        {% endif %}
+
+        <br>
+        <h2>Invited Events</h2>
+        <br>
+        {% if user_invited_events %}
+            <ul>
+                {% for event in user_invited_events %}
+                    <li>
+                        <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
+                        - {{ event.date_time|date:"D, M d Y H:i" }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have no event invitations.</p>
+        {% endif %}
+    </div>        
 {% endblock %}
