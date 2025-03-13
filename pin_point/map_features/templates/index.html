@@ -25,12 +25,10 @@
             const latitude = e.latlng.lat.toFixed(5);
             const longitude = e.latlng.lng.toFixed(5);
 
-            // Remove previous marker if exists
             if (marker) {
                 map.removeLayer(marker);
             }
 
-            // Add a new marker at the clicked location
             marker = L.marker([latitude, longitude]).addTo(map);
 
             // Show a popup with an event creation link

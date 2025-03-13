@@ -4,7 +4,8 @@ from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .models import *
-from .forms import UserSignupForm
+from .forms import UserSignupForm, EventForm
+
 
 @login_required
 def index(request):
@@ -42,36 +43,29 @@ def edit_profile(request):
 @login_required
 def event_create(request):
     if request.method == "POST":
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        date_time = request.POST.get('date_time')
-        latitude = float(request.POST.get('latitude'))
-        longitude = float(request.POST.get('longitude'))
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.created_by = request.user
+            event.save()
+            form.save_m2m()  # Save invited users
+            return redirect('event_detail', event_id=event.id)
+    else:
+        latitude = request.GET.get('latitude', '')
+        longitude = request.GET.get('longitude', '')
+        form = EventForm(initial={'latitude': latitude, 'longitude': longitude})
 
-        event = Event.objects.create(
-            name=name,
-            description=description,
-            date_time=date_time,
-            location_name="Custom Location",
-            latitude=latitude,
-            longitude=longitude,
-            created_by=request.user
-        )
-
-        return redirect('event_detail', event_id=event.id) 
-
-    latitude = request.GET.get('latitude', '')
-    longitude = request.GET.get('longitude', '')
-    context = {
-        'latitude': latitude,
-        'longitude': longitude,
-    }
-    return render(request, 'event_create.html', context)
+    return render(request, 'event_create.html', {'form': form})
 
 @login_required
 def event_list(request):
-    events = Event.objects.all().order_by('-date_time')
-    return render(request, 'event_list.html', {'events': events})
+    user_created_events = Event.objects.filter(created_by=request.user)
+    user_invited_events = Event.objects.filter(invitees=request.user)
+
+    return render(request, 'event_list.html', {
+        'user_created_events': user_created_events,
+        'user_invited_events': user_invited_events,
+    })
 
 @login_required
 def event_detail(request, event_id):

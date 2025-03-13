@@ -7,27 +7,13 @@
             <h2 class="text-center">Create Event</h2>
             <br>
             <form method="POST">
-            {% csrf_token %}
-                <label for="name">Event Name:</label>
-                <input type="text" name="name" required>
-
-                <label for="description">Description:</label>
-                <textarea name="description"></textarea>
-
-                <label for="date_time">Date & Time:</label>
-                <input type="datetime-local" name="date_time" required>
-
-                <label for="latitude">Latitude:</label>
-                <input type="text" name="latitude" value="{{ latitude }}" readonly>
-
-                <label for="longitude">Longitude:</label>
-                <input type="text" name="longitude" value="{{ longitude }}" readonly>
-
-                <button type="submit">Create Event</button>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100">Create Event</button>
             </form>
         </div>
     </div>
-        {% else %}
-            <p>You must <a href="{% url 'login' %}">log in</a> to create an event.</p>
-        {% endif %}
-    {% endblock %}
+    {% else %}
+        <p>You must <a href="{% url 'login' %}">log in</a> to create an event.</p>
+    {% endif %}
+{% endblock %}
