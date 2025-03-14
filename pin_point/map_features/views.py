@@ -71,3 +71,8 @@ def event_list(request):
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     return render(request, 'event_detail.html', {'event': event})
+
+@login_required
+def chat_view(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    return render(request, 'event_chat.html', {'event': event})

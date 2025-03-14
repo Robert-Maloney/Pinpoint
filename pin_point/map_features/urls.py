@@ -8,6 +8,7 @@ urlpatterns = [
     path('create-event/', views.event_create, name='create_event'),
     path('events/', views.event_list, name='event_list'),
     path('events/<int:event_id>/', views.event_detail, name='event_detail'),
+    path('ws/chat/<int:event_id>/', views.chat_view, name='chat'),
     path('register/', UserSignupView.as_view(), name='register'),
     path('login/', LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),

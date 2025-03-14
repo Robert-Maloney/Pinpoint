@@ -28,9 +28,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
-    'map_features',
     'leaflet',
+    'channels',
+    'map_features',
 ]
 
 MIDDLEWARE = [
@@ -61,7 +63,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pin_point.wsgi.application'
+ASGI_APPLICATION = "pin_point.asgi.application"
+# WSGI_APPLICATION = 'pin_point.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -108,4 +111,10 @@ LEAFLET_CONFIG = {
     'DEFAULT_ZOOM': 13,
     'MIN_ZOOM': 3,
     'MAX_ZOOM': 18,
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
 }

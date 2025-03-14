@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Chat for Event: {{ event.name }}</h2>
+
+<!-- Display chat messages -->
+<div id="chat-box" style="height: 300px; overflow-y: scroll; border: 1px solid black; padding: 10px;"></div>
+
+<!-- Input for new messages -->
+<input type="text" id="chat-message-input" placeholder="Type a message..." />
+<button onclick="sendMessage()">Send</button>
+
+<script>
+    const event_id = "{{ event.id }}";
+    const ws = new WebSocket(`ws://${window.location.host}/ws/chat/${event_id}/`);
+
+
+    // Listen for messages from the server
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        document.getElementById("chat-box").innerHTML += `<p><strong>${data.user}:</strong> ${data.message}</p>`;
+    };
+
+    // Send a message when the user clicks "Send"
+    function sendMessage() {
+        const messageInput = document.getElementById("chat-message-input");
+        const message = messageInput.value;
+        if (message.trim() === "") return;  // Don't send empty messages
+
+        // Send the message via WebSocket to the server
+        ws.send(JSON.stringify({'message': message}));
+
+        // Clear the input field
+        messageInput.value = "";
+    }
+</script>
+{% endblock %}
