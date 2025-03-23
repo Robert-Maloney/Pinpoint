@@ -64,7 +64,7 @@ TEMPLATES = [
 ]
 
 ASGI_APPLICATION = "pin_point.asgi.application"
-# WSGI_APPLICATION = 'pin_point.wsgi.application'
+WSGI_APPLICATION = 'pin_point.wsgi.application'
 
 DATABASES = {
     'default': {

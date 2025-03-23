@@ -3,6 +3,7 @@ import json
 from asgiref.sync import sync_to_async
 from map_features.models import Message  
 
+# Initial Concept from django.channels Documentation - https://channels.readthedocs.io/en/latest/topics/consumers.html#basic-layout
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.event_id = self.scope['url_route']['kwargs']['event_id']
@@ -14,7 +15,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         await self.accept()
 
-        # ✅ Send chat history when user connects
         messages = await self.get_chat_history(self.event_id)
         await self.send(text_data=json.dumps({
             "type": "chat_history",
