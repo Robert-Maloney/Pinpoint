@@ -2,37 +2,72 @@
 {% load static %}
 
 {% block content %}
-<h2>Chat for Event: {{ event.name }}</h2>
+<div class="container">
+    <h2>Chat for Event: {{ event.name }}</h2>
 
-<!-- Display chat messages -->
-<div id="chat-box" style="height: 300px; overflow-y: scroll; border: 1px solid black; padding: 10px;"></div>
+    <!-- Chat -->
+    <div id="chat-box"></div>
 
-<!-- Input for new messages -->
-<input type="text" id="chat-message-input" placeholder="Type a message..." />
-<button onclick="sendMessage()">Send</button>
+    <!-- Input for new messages -->
+    <input type="text" id="chat-input" placeholder="Type a message..." />
+
+    <!-- Send Button -->
+    <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+</div>
 
 <script>
     const event_id = "{{ event.id }}";
     const ws = new WebSocket(`ws://${window.location.host}/ws/chat/${event_id}/`);
 
-
-    // Listen for messages from the server
-    ws.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        document.getElementById("chat-box").innerHTML += `<p><strong>${data.user}:</strong> ${data.message}</p>`;
+    // Ensuring we connect to Websocket
+    ws.onopen = function () {
+        console.log("Connected to WebSocket");
     };
 
-    // Send a message when the user clicks "Send"
-    function sendMessage() {
-        const messageInput = document.getElementById("chat-message-input");
-        const message = messageInput.value;
-        if (message.trim() === "") return;  // Don't send empty messages
+    // Messages from the WebSocket
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
 
-        // Send the message via WebSocket to the server
-        ws.send(JSON.stringify({'message': message}));
+        if (data.type === "chat_history") {
+            // Load previous messages
+            data.messages.reverse().forEach(msg => {
+                displayMessage(msg.username, msg.message);
+            });
+        } else if (data.type === "chat_message") {
+            // Display real-time messages
+            displayMessage(data.username, data.message);
+        }
+    };
+
+    ws.onerror = function(error) {
+        console.error("WebSocket Error:", error);
+    };
+
+    ws.onclose = function () {
+        console.log("WebSocket Disconnected");
+    };
+
+    function sendMessage() {
+        const messageInput = document.getElementById("chat-input");
+        const message = messageInput.value.trim();
+        if (!message) return;  // Prevent sending empty messages
+
+        ws.send(JSON.stringify({ 'message': message }));
 
         // Clear the input field
         messageInput.value = "";
     }
+
+    // Function to display messages in the chat box
+    function displayMessage(username, message) {
+        const chatBox = document.getElementById("chat-box");
+        const messageElement = document.createElement("p");
+        messageElement.innerHTML = `<strong>${username}:</strong> ${message}`;
+        chatBox.appendChild(messageElement);
+
+        // Auto-scroll to the latest message
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 </script>
+
 {% endblock %}

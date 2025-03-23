@@ -7,19 +7,19 @@ For more information on this file, see
 https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
 """
 
-import os
 from django.core.asgi import get_asgi_application
-from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.routing import URLRouter, ProtocolTypeRouter
 from channels.auth import AuthMiddlewareStack
-import map_features.routing 
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pin_point.settings")
+from channels.sessions import SessionMiddlewareStack
+import map_features.routing
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            map_features.routing.websocket_urlpatterns  
+    "websocket": SessionMiddlewareStack(  # Ensures Django sessions are available
+        AuthMiddlewareStack(  # Ensures user authentication is passed
+            URLRouter(
+                map_features.routing.websocket_urlpatterns
+            )
         )
     ),
 })
