@@ -73,6 +73,10 @@ def event_detail(request, event_id):
     return render(request, 'event_detail.html', {'event': event})
 
 @login_required
-def chat_view(request, event_id):
+def event_chat(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     return render(request, 'event_chat.html', {'event': event})
+
+def user_chat_list(request):
+    events = Event.objects.filter(invitees=request.user)
+    return render(request, 'user_chat_list.html', {'events': events})
