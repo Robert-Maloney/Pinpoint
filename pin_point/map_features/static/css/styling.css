@@ -284,15 +284,27 @@ form ul {
 
 /* Messaging */
 /* Chat Box */
+
+.chat-box-container {
+   width: 100%;
+   max-width: 600px;
+   height: 450px; 
+   margin: 20px auto;
+   border-radius: 10px;
+   overflow: hidden;
+   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+   background: #ccc; 
+}
+
 #chat-box {
    background-color: white;
    color: black;
    border: 1px solid #ccc;
    padding: 10px;
-   width: 50%;
+   width: auto;
    height: 300px;
    overflow-y: auto;
-   margin-bottom: 10px;  
+   margin: 10px;  
 }
 
 /* Chat Input */
