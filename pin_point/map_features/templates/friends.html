@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4 pb-5">
+
+  <h4 class="text-white">My Friends</h4>
+  <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+    {% for friend in friends %}
+      <div class="col">
+        <div class="card bg-dark text-white shadow-sm p-3 d-flex flex-row justify-content-between align-items-center">
+         <div class="d-flex align-items-center">
+            <a href="{% url 'friend_profile' friend.id %}" class="text-white text-decoration-none d-flex align-items-center">
+              <img src="{{ friend.get_profile_photo }}" alt="Profile" class="rounded-circle me-3" width="50" height="50">
+              <strong>{{ friend.username }}</strong>
+            </a>
+          </div>          
+          <div>
+            <a href="{% url 'remove_friend' friend.id %}" class="btn btn-outline-light btn-sm">Remove</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-white">No friends yet.</p>
+    {% endfor %}
+  </div>
+
+  <h4 class="text-white"> Friend Requests</h4>
+  <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+    {% for fr in incoming_requests %}
+      <div class="col">
+        <div class="card bg-dark text-white shadow-sm p-3 d-flex flex-row justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <img src="{{ fr.from_user.get_profile_photo }}" alt="Profile" class="rounded-circle me-3" width="50" height="50">
+            <strong>{{ fr.from_user.username }}</strong>
+          </div>
+          <div>
+            <a href="{% url 'accept_friend_request' fr.id %}" class="btn btn-success btn-sm me-2">Accept</a>
+            <a href="{% url 'decline_friend_request' fr.id %}" class="btn btn-outline-light btn-sm">Decline</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-white">No incoming requests.</p>
+    {% endfor %}
+  </div>
+
+  <h4 class="text-white"> Sent Requests</h4>
+  <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+    {% for fr in sent_requests %}
+      <div class="col">
+        <div class="card bg-dark text-white shadow-sm p-3 d-flex flex-row justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <img src="{{ fr.to_user.get_profile_photo }}" alt="Profile" class="rounded-circle me-3" width="50" height="50">
+            <strong>{{ fr.to_user.username }}</strong>
+          </div>
+          <div>
+            <a href="{% url 'decline_friend_request' fr.id %}" class="btn btn-outline-light btn-sm">Cancel</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-white">No sent requests.</p>
+    {% endfor %}
+  </div>
+
+  <h4 class="text-white"> Add Friends</h4>
+  <div class="row row-cols-1 row-cols-md-2 g-3">
+    {% for user in other_users %}
+      {% if user not in request.user.friends.all %}
+        <div class="col">
+          <div class="card bg-dark text-white shadow-sm p-3 d-flex flex-row justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+               <a href="{% url 'friend_profile' user.id %}" class="text-white text-decoration-none d-flex align-items-center">
+                  <img src="{{ user.get_profile_photo }}" alt="Profile" class="rounded-circle me-3" width="50" height="50">
+                  <strong>{{ user.username }}</strong>
+                </a>
+            </div>
+            <div>
+               <button 
+               class="btn btn-primary btn-sm send-request-btn"
+               data-user-id="{{ user.id }}"
+               id="add-friend-btn-{{ user.id }}">
+               Add Friend
+             </button>
+             </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $('.send-request-btn').click(function () {
+      const btn = $(this);
+      const userId = btn.data('user-id');
+
+      $.ajax({
+        url: `/friends/send/${userId}/`,
+        type: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        success: function () {
+          btn.removeClass('btn-primary').addClass('btn-secondary');
+          btn.text('Request Sent');
+          btn.prop('disabled', true);
+        },
+        error: function () {
+          alert('Error sending request.');
+        }
+      });
+    });
+  });
+</script>
+
+{% endblock %}
