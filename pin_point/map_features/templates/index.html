@@ -4,7 +4,7 @@
     <div class="container">
         <!-- Map container -->
         <div class="map-container">
-            <div id="map"></div>
+            <div id="map" style="height: 500px;"></div>
         </div>
     </div>
 
@@ -18,9 +18,28 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        // Event icon
+        const eventIcon = L.icon({
+            iconUrl: '{% static "icons/pin.png" %}',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+        });
+
+        const events = {{ events_json|safe }};
+        const today = new Date();
+
+        events.forEach(event => {
+            const eventDate = new Date(event.date);
+            if (eventDate >= today) {
+                const marker = L.marker([event.lat, event.lng], { icon: eventIcon }).addTo(map);
+                marker.bindPopup(`<a href="${event.url}"><strong>${event.title}</strong><br>${event.date}</a>`);
+            }
+        });        
+        
+        // Add click event to the map
         let marker;
 
-        // Add click event to the map
         map.on('click', function (e) {
             const latitude = e.latlng.lat.toFixed(5);
             const longitude = e.latlng.lng.toFixed(5);

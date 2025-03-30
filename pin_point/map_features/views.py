@@ -3,13 +3,37 @@ from django.views.generic import CreateView
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.db.models import Q
 from .models import *
 from .forms import UserSignupForm, EventForm
+import json
 
 
 @login_required
 def index(request):
-    return render(request, 'index.html')  # Main map view
+    user = request.user
+    now = timezone.now()
+    
+    events = Event.objects.filter(
+        Q(created_by=user) | Q(invitees=user),
+        date_time__gte=now
+    ).distinct()
+
+    event_data = [
+        {
+            "title": e.name,
+            "date": e.date_time.strftime("%Y-%m-%d %H:%M"),
+            "lat": e.latitude,
+            "lng": e.longitude,
+            "url": f"/events/{e.id}/"
+        }
+        for e in events if e.latitude and e.longitude
+    ]
+
+    return render(request, 'index.html', {
+        "events_json": json.dumps(event_data)
+    })  # Main map view
 
 # User Related Views
 class UserSignupView(CreateView):
