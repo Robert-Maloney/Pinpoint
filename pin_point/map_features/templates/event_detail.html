@@ -9,6 +9,8 @@
         <p><strong>Location:</strong> {{ event.location_name }}</p>
         <p><strong>Coordinates:</strong> ({{ event.latitude }}, {{ event.longitude }})</p>
         <p><strong>Created by:</strong> {{ event.created_by.username }}</p>
+        <a href="{% url 'event_chat' event.id %}">Chat Link
+        <br>
         <a href="{% url 'event_list' %}">Back to Events</a>
     </div>
 {% endblock %}
