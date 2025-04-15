@@ -30,7 +30,6 @@
     
         {% if user.is_authenticated %}
             <div class="header-user d-flex align-items-center">
-                <span class="username-text">Hello, {{ user.username }}</span>
                 <a href="{% url 'my_profile' %}" class="profile-link">
                     {% if user.profile_photo %}
                         <img src="{{ user.get_profile_photo }}" alt="Profile Photo" class="profile-img">
