@@ -46,7 +46,9 @@
         <div class="card bg-dark text-white shadow-sm p-3 d-flex flex-row justify-content-between align-items-center">
           <div class="d-flex align-items-center">
             <img src="{{ fr.to_user.get_profile_photo }}" alt="Profile" class="rounded-circle me-3" width="50" height="50">
-            <strong>{{ fr.to_user.username }}</strong>
+            <a href="{% url 'friend_profile' fr.to_user.id %}" class="text-white text-decoration-none">
+              <strong>{{ fr.to_user.username }}</strong>
+            </a>
           </div>
           <div>
             <a href="{% url 'decline_friend_request' fr.id %}" class="btn btn-outline-light btn-sm">Cancel</a>
@@ -60,7 +62,6 @@
   <h4 class="text-white"> Add Friends</h4>
   <div class="d-flex flex-column gap-3 mb-4">
     {% for user in other_users %}
-      {% if user not in request.user.friends.all %}
           <div class="card bg-dark text-white shadow-sm p-3 d-flex flex-row justify-content-between align-items-center">
             <div class="d-flex align-items-center">
                <a href="{% url 'friend_profile' user.id %}" class="text-white text-decoration-none d-flex align-items-center">
@@ -78,7 +79,6 @@
              </div>
           </div>
 
-      {% endif %}
     {% endfor %}
   </div>
 </div>
