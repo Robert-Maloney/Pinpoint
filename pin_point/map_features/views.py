@@ -52,7 +52,7 @@ class UserSignupView(CreateView):
 @login_required
 def user_profile(request):
     user = request.user
-    return render(request, 'profile.html', {'user': user})
+    return render(request, 'profile.html', {'profile_user': user})
 
 @login_required
 def view_profile(request, user_id):
@@ -123,7 +123,8 @@ def friends_page(request):
     friends = user.friends.all()
     incoming = user.received_requests.all()
     outgoing = user.sent_requests.all()
-    others = User.objects.exclude(id=user.id).exclude(id__in=friends)
+    sent_users = outgoing.values_list('to_user__id', flat=True)
+    others = User.objects.exclude(id=user.id).exclude(id__in=friends).exclude(id__in=sent_users)
 
     context = {
         'friends': friends,

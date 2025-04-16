@@ -1,22 +1,66 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    <div class="container">
-        <br>
-        <h2>User Profile</h2>
-        <div class="profile-container">
-            {% if user.profile_photo and user.profile_photo.url %}
-                <img src="{{ profile_user.profile_photo.url }}" alt="Profile Photo" class="profile-img">
+    <div class="container py-4">
+        <h2 class="text-white mb-4">
+            {% if profile_user == request.user %}
+                My Profile
             {% else %}
-                <img src="{% static 'icons/default_profile.jpg' %}" alt="Default Profile" class="profile-img">
+                {{ profile_user.username }}'s Profile
             {% endif %}
-        </div>
-        <br>
-        <p><strong>Username:</strong> {{ profile_user.username }}</p>
-        <p><strong>Email:</strong> {{ profile_user.email }}</p>
-        <p><strong>Phone:</strong> {{ profile_user.phone }}</p>
+        </h2>
 
-        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
-        <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+        <div class="profile-container d-flex flex-column align-items-center text-white">
+            <div class="mb-3">
+                <img src="{{ profile_user.get_profile_photo }}" alt="Profile Photo" class="rounded-circle border border-light" width="120" height="120">
+                <p class="mt-2 mb-0 text-white-50">
+                    {{ profile_user.friends.count }} friend{{ profile_user.friends.count|pluralize }}
+                </p>
+            </div>
+        </div>
+
+        {% if profile_user == request.user %}
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary me-2">Edit Profile</a>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+        {% else %}
+            {% if profile_user in request.user.friends.all %}
+                <a href="{% url 'remove_friend' profile_user.id %}" class="btn btn-outline-light">Remove Friend</a>
+            {% else %}
+                <form method="post" id="friend-request-form" class="d-inline">
+                    {% csrf_token %}
+                    <button type="button"
+                            class="btn btn-success"
+                            id="friend-request-btn"
+                            data-user-id="{{ profile_user.id }}">
+                        Add Friend
+                    </button>
+                </form>
+            {% endif %}
+        {% endif %}
+    
     </div>
+    <script>
+    $(document).ready(function () {
+        $("#friend-request-btn").click(function () {
+            const btn = $(this);
+            const userId = btn.data("user-id");
+
+            $.ajax({
+                url: `/friends/send/${userId}/`,
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                success: function () {
+                    btn.removeClass("btn-success").addClass("btn-secondary");
+                    btn.text("Request Sent").prop("disabled", true);
+                },
+                error: function () {
+                    alert("Something went wrong. Try again.");
+                }
+            });
+        });
+    });
+    </script>
+
 {% endblock %}
