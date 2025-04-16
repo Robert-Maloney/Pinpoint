@@ -1,12 +1,35 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+
+<!-- Tutorial -->
+<div class="modal fade" id="tutorialModal" tabindex="-1" aria-labelledby="tutorialModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white border-light">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="tutorialModalLabel">Tutorial</h5>
+        </div>
+
+        <div class="modal-body" id="tutorial-step"> </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="skipBtn">Skip</button>
+            <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
     <div class="container">
-        <!-- Map container -->
-        <div class="map-container">
+        <div class="map-container position-relative">
             <div id="map" style="height: 500px;"></div>
+            <button id="helpBtn" class="btn btn-sm btn-light position-absolute" style="top: 15px; right: 15px; z-index: 1000;"> Help </button>
         </div>
     </div>
+
+    <!-- Map Script -->
 
     <script>
         // Initialize the map centered at Dublin City University
@@ -58,5 +81,59 @@
                    style="color:blue; text-decoration:underline;">Create Event Here</a>
             `).openPopup();
         });
+    </script>
+
+    <!-- Tutorial Script-->
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tutorialSteps = [
+        "Hello and welcome to PinPoint, your new best pal for organising events!", 
+        "Our app is centered around this map in the middle. Click on the map to select a location and create a new event!", 
+        "But first you might want to add some more users! Connect with fellow PinPoint users via the 'friends' tab in the bottom left. You can always return here after using the 'Home' button in the center", 
+        "After you create your event, find it in an assorted list in the 'Pin' tab next to your friends!", 
+        "Existing events you've created or been invited to are also marked on your map with pins. Click on them to view more details.", 
+        "You can return to this guide anytime by visiting the Help section."
+        ];
+    
+        let currentStep = 0;
+        const modal = new bootstrap.Modal(document.getElementById('tutorialModal'));
+        const stepContainer = document.getElementById('tutorial-step');
+        const nextBtn = document.getElementById('nextBtn');
+        const helpBtn = document.getElementById('helpBtn');
+        const skipBtn = document.getElementById('skipBtn');
+
+
+        function showStep(stepIndex) {
+            stepContainer.innerText = tutorialSteps[stepIndex];
+            nextBtn.innerText = stepIndex === tutorialSteps.length - 1 ? "Finish" : "Next";
+        }
+    
+        nextBtn.addEventListener("click", function () {
+            if (currentStep < tutorialSteps.length - 1) {
+                currentStep++;
+                showStep(currentStep);
+            } else {
+                modal.hide();
+                localStorage.setItem("tutorialCompleted", "true");
+            }
+        });
+
+        skipBtn.addEventListener("click", function () {
+        localStorage.setItem("tutorialCompleted", "true");
+        modal.hide();
+        });
+    
+        helpBtn.addEventListener("click", function () {
+            currentStep = 0;
+            showStep(currentStep);
+            modal.show();
+        });
+    
+        if (!localStorage.getItem("tutorialCompleted")) {
+            showStep(currentStep);
+            modal.show();
+        }
+    });
     </script>
 {% endblock %}

@@ -3,17 +3,26 @@
 {% block title %} Login {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <br>
-        <h2>Login</h2>
-        <br>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%; background-color: #222; color: white;">
+        <h2 class="text-center mb-4">Login</h2>
+
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Login</button>
+
+            <div class="d-grid mt-3">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
         </form>
-        <br>
-        <p>Not registered?</p>
-        <a href="{% url 'register' %}" class="btn-register">Create an Account</a>
+        
+        <div class="mt-4 text-center">
+            <p class="mb-2">Not registered?</p>
+            <a href="{% url 'register' %}" class="btn btn-outline-light btn-sm mb-2">Create an Account</a>
+            <hr class="bg-light my-3" style="opacity: 0.2;">
+            <p class="mb-2">Forgot your password?</p>
+            <a href="{% url 'password_reset' %}" class="btn btn-outline-light btn-sm mb-2">Reset Password</a>
+        </div>
     </div>
+</div>
 {% endblock %}

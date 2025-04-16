@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LoginView, LogoutView
 from .views import UserSignupView, user_profile, edit_profile, index
 from . import views
@@ -10,12 +11,19 @@ urlpatterns = [
     path('events/<int:event_id>/', views.event_detail, name='event_detail'),
     path('ws/chat/<int:event_id>/', views.event_chat, name='event_chat'),
     path('events/chats/', views.user_chat_list, name='user_chat_list'),
+
     path('register/', UserSignupView.as_view(), name='register'),
     path('login/', LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
     path('profile/', views.user_profile, name='my_profile'),
     path('profile/<int:user_id>/', views.view_profile, name='friend_profile'),
     path('profile/edit/', edit_profile, name='edit_profile'),
+
     path('friends/', views.friends_page, name='friends_page'),
     path('friends/send/<int:user_id>/', views.send_friend_request, name='send_friend_request'),
     path('friends/accept/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),

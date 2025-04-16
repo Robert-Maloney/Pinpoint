@@ -98,6 +98,8 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 GDAL_LIBRARY_PATH = r"C:\Users\Robm1\anaconda3\envs\django_gis\Library\bin\gdal.dll"
 PROJ_LIB = r"C:\Users\Robm1\anaconda3\envs\django_gis\Library\share\proj"
 
