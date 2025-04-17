@@ -11,6 +11,8 @@ urlpatterns = [
     path('events/<int:event_id>/', views.event_detail, name='event_detail'),
     path('ws/chat/<int:event_id>/', views.event_chat, name='event_chat'),
     path('events/chats/', views.user_chat_list, name='user_chat_list'),
+    path('events/<int:event_id>/rsvp/', views.rsvp_event, name='rsvp_event'),
+    path('events/<int:event_id>/delete/', views.delete_event, name='delete_event'),
 
     path('register/', UserSignupView.as_view(), name='register'),
     path('login/', LoginView.as_view(template_name='login.html'), name='login'),

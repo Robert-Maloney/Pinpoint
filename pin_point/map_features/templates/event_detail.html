@@ -1,16 +1,77 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="container">
-        <br>
-        <h2>{{ event.name }}</h2>
-        <br>
-        <p><strong>Description:</strong> {{ event.description }}</p>
-        <p><strong>Date & Time:</strong> {{ event.date_time|date:"D, M d Y H:i" }}</p>
-        <p><strong>Location:</strong> {{ event.location_name }}</p>
-        <p><strong>Coordinates:</strong> ({{ event.latitude }}, {{ event.longitude }})</p>
-        <p><strong>Created by:</strong> {{ event.created_by.username }}</p>
-        <a href="{% url 'event_chat' event.id %}">Chat Link
-        <br>
-        <a href="{% url 'event_list' %}">Back to Events</a>
+<div class="container mt-5 mb-5">
+    <div class="card bg-dark text-white border-light mx-auto" style="max-width: 500px;">
+        <div class="card-body">
+            <h2 class="card-title text-center mb-4">{{ event.name }}</h2>
+
+            <div class="d-flex justify-content-center gap-2 mb-3 flex-wrap">
+                <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ event.name }}&dates={{ event.start_time|date:"Ymd\\THis\\Z" }}/{{ event.end_time|date:"Ymd\\THis\\Z" }}&details={{ event.description }}&location={{ event.latitude }},{{ event.longitude }}" target="_blank" class="btn btn-outline-light btn-sm">
+                    Add to Google Calendar
+                </a>
+                <a href="https://www.google.com/maps/search/?api=1&query={{ event.latitude }},{{ event.longitude }}" target="_blank" class="btn btn-outline-light btn-sm">
+                    View on Google Maps
+                </a>
+            </div>
+
+            <!-- Event  -->
+            <div class="card p-3 bg-secondary">
+                <p><strong>Description:</strong> {{ event.description|default:"No description provided." }}</p>
+                <p><strong>Start Time:</strong> {{ event.start_time|date:"D, M d Y H:i" }}</p>
+                <p><strong>End Time:</strong> {{ event.end_time|date:"D, M d Y H:i" }}</p>
+                <p><strong>Location:</strong> {{ event.location_name }}</p>
+                <p><strong>Coordinates:</strong> ({{ event.latitude }}, {{ event.longitude }})</p>
+                <p><strong>Created by:</strong> {{ event.created_by.username }}</p>
+            </div>
+
+            <!-- RSVP Form -->
+            {% if user != event.created_by %}
+            <form method="POST" action="{% url 'rsvp_event' event.id %}" class="mt-4">
+                {% csrf_token %}
+                <div class="input-group">
+                    <select name="status" class="form-select">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                        <option value="maybe">Maybe</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">RSVP</button>
+                </div>
+            </form>
+            {% endif %}
+            
+            {% if all_rsvps is not None %}
+            <div class="card p-3 bg-secondary mt-4">
+                <h5 class="mb-3">RSVP Responses</h5>
+                <p class="mb-2"><strong class="text-success">Yes:</strong>
+                    {% for rsvp in all_rsvps %}
+                        {% if rsvp.status == "yes" %} {{ rsvp.user.username }}{% if not forloop.last %},{% endif %}{% endif %}
+                    {% endfor %}
+                </p>
+                <p class="mb-2"><strong class="text-danger">No:</strong>
+                    {% for rsvp in all_rsvps %}
+                        {% if rsvp.status == "no" %} {{ rsvp.user.username }}{% if not forloop.last %},{% endif %}{% endif %}
+                    {% endfor %}
+                </p>
+                <p><strong class="text-warning">Maybe:</strong>
+                    {% for rsvp in all_rsvps %}
+                        {% if rsvp.status == "maybe" %} {{ rsvp.user.username }}{% if not forloop.last %},{% endif %}{% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+            {% endif %}
+
+            <div class="text-center mt-4">
+                <a href="{% url 'event_chat' event.id %}" class="btn btn-outline-info btn-sm mb-2">Chat Link</a><br>
+                <a href="{% url 'event_list' %}" class="text-light">Back to Events</a>
+            </div>
+
+            {% if user == event.created_by %}
+                <form method="POST" action="{% url 'delete_event' event.id %}" onsubmit="return confirm('Are you sure you want to delete this event?');">
+                    {% csrf_token %}
+                    <a href="{% url 'delete_event' event.id %}" class="btn btn-danger mt-3">Delete Event</a>
+                </form>
+            {% endif %}
+        </div>
     </div>
+</div>
 {% endblock %}

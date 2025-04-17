@@ -1,37 +1,67 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="container">
-        <br>
-        <h2>Your Events</h2>
-        <br>
-        <ul>
-            {% if user_created_events %}
-            <ul>
-                {% for event in user_created_events %}
-                    <li>
-                        <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
-                        - {{ event.date_time|date:"D, M d Y H:i" }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>You haven't created any events.</p>
-        {% endif %}
+<div class="container mt-5 mb-5">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#upcoming" role="tab">Upcoming Events</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#past" role="tab">Past Events</a>
+        </li>
+    </ul>
 
-        <br>
-        <h2>Invited Events</h2>
-        <br>
-        {% if user_invited_events %}
-            <ul>
-                {% for event in user_invited_events %}
-                    <li>
-                        <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
-                        - {{ event.date_time|date:"D, M d Y H:i" }}
-                    </li>
+    <!-- Tab panes -->
+    <div class="tab-content pt-3">
+        <!-- Upcoming -->
+        <div class="tab-pane active" id="upcoming" role="tabpanel">
+            {% if upcoming_events %}
+                {% for event in upcoming_events %}
+                    <div class="card mb-3 bg-dark text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ event.name }}</h5>
+                            <p class="card-text">
+                                {{ event.start_time|date:"D M d, H:i" }} – {{ event.end_time|date:"H:i" }}<br>
+                                {{ event.location_name }}
+                            </p>
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-light btn-sm">View</a>
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
-        {% else %}
-            <p>You have no event invitations.</p>
-        {% endif %}
-    </div>        
+            {% else %}
+                <p class="text-white">No upcoming events.</p>
+            {% endif %}
+        </div>
+
+        <!-- Past -->
+        <div class="tab-pane" id="past" role="tabpanel">
+            {% if past_events %}
+                {% for event in past_events %}
+                    <div class="card mb-3 bg-secondary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ event.name }}</h5>
+                            <p class="card-text">
+                                {{ event.start_time|date:"D M d, H:i" }} – {{ event.end_time|date:"H:i" }}<br>
+                                {{ event.location_name }}
+                            </p>
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-light btn-sm">View</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-white">No past events yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 4 Tab script -->
+<script>
+    $(function () {
+        $('.nav-tabs a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    });
+</script>
 {% endblock %}
