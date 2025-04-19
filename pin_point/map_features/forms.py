@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.utils.timezone import now
 from .models import User, Event
 from django.db import transaction
 
@@ -31,9 +32,24 @@ class EventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        fields = ['name', 'description', 'date_time', 'location_name', 'latitude', 'longitude', 'private', 'invitees']
+        fields = ['name', 'description', 'start_time', 'end_time', 'location_name', 'latitude', 'longitude', 'is_public', 'invitees']
         widgets = {
-            'date_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'latitude': forms.TextInput(attrs={'readonly': True}),
-            'longitude': forms.TextInput(attrs={'readonly': True}),
+            'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput(),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get('start_time')
+        end = cleaned_data.get('end_time')
+
+        if start and start < now():
+            raise forms.ValidationError("Start time must be in the future.")
+        
+        if end and end < now():
+            raise forms.ValidationError("End time must be in the future.")
+
+        if start and end and end <= start:
+            raise forms.ValidationError("End time must be after start time.")

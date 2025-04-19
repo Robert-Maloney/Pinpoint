@@ -4,6 +4,7 @@ from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.utils.timezone import now
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from .models import *
@@ -16,20 +17,21 @@ from django.http import JsonResponse
 @login_required
 def index(request):
     user = request.user
-    now = timezone.now()
     
     events = Event.objects.filter(
-        Q(created_by=user) | Q(invitees=user),
-        date_time__gte=now
+    Q(is_public=True) | Q(created_by=user) | Q(invitees=user),
+    end_time__gte=now()
     ).distinct()
 
     event_data = [
         {
             "title": e.name,
-            "date": e.date_time.strftime("%Y-%m-%d %H:%M"),
             "lat": e.latitude,
             "lng": e.longitude,
-            "url": f"/events/{e.id}/"
+            "url": f"/events/{e.id}/",
+            "ongoing": e.start_time <= now() <= e.end_time,
+            "date": e.start_time.strftime("%Y-%m-%d %H:%M"),
+            "end_time": e.end_time.strftime("%Y-%m-%d %H:%M"),
         }
         for e in events if e.latitude and e.longitude
     ]
@@ -74,6 +76,8 @@ def edit_profile(request):
 # Event Create Views
 @login_required
 def event_create(request):
+    favourites = FavouriteLocation.objects.filter(user=request.user)
+
     if request.method == "POST":
         form = EventForm(request.POST)
         form.fields['invitees'].queryset = request.user.friends.all()
@@ -89,22 +93,34 @@ def event_create(request):
         form = EventForm(initial={'latitude': latitude, 'longitude': longitude})
         form.fields['invitees'].queryset = request.user.friends.all()
 
-    return render(request, 'event_create.html', {'form': form})
+    return render(request, 'event_create.html', {'form': form, 'favourites': favourites})
 
 @login_required
 def event_list(request):
-    user_created_events = Event.objects.filter(created_by=request.user)
-    user_invited_events = Event.objects.filter(invitees=request.user)
+    now_time = timezone.now()
+
+    user_events = Event.objects.filter(
+        Q(created_by=request.user) | Q(invitees=request.user)
+    ).distinct()
+
+    upcoming_events = user_events.filter(end_time__gte=now_time)
+    past_events = user_events.filter(end_time__lt=now_time)
+
 
     return render(request, 'event_list.html', {
-        'user_created_events': user_created_events,
-        'user_invited_events': user_invited_events,
+        'upcoming_events': upcoming_events,
+        'past_events': past_events,
+        'now': now_time,
     })
 
 @login_required
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    return render(request, 'event_detail.html', {'event': event})
+    user_rsvp = RSVP.objects.filter(user=request.user, event=event).first()
+
+    all_rsvps = RSVP.objects.filter(event=event) if request.user == event.created_by else None
+
+    return render(request, 'event_detail.html', {'event': event, 'user_rsvp': user_rsvp, 'all_rsvps': all_rsvps})
 
 @login_required
 def event_chat(request, event_id):
@@ -114,6 +130,25 @@ def event_chat(request, event_id):
 def user_chat_list(request):
     events = Event.objects.filter(invitees=request.user)
     return render(request, 'user_chat_list.html', {'events': events})
+
+@login_required
+def rsvp_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    return redirect('event_detail', event_id=event.id)
+
+@login_required
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    if request.user != event.created_by:
+        return redirect('event_detail', event_id=event.id)
+    
+    if request.method == 'POST':
+        event.delete()
+        return redirect('event_list')
+
+    return render(request, 'event_confirm_delete.html', {'event': event })
+
 
 # Friend Views
 

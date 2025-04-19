@@ -53,11 +53,16 @@
         const today = new Date();
 
         events.forEach(event => {
-            const eventDate = new Date(event.date);
-            if (eventDate >= today) {
-                const marker = L.marker([event.lat, event.lng], { icon: eventIcon }).addTo(map);
-                marker.bindPopup(`<a href="${event.url}"><strong>${event.title}</strong><br>${event.date}</a>`);
-            }
+            const markerIcon = new L.Icon({
+                iconUrl: event.ongoing ? '{% static "icons/ongoing_pin.png" %}' : '{% static "icons/pin.png" %}',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]  
+            })
+
+            const marker = L.marker([event.lat, event.lng], { icon: eventIcon }).addTo(map);
+            marker.bindPopup(`<a href="${event.url}"><strong>${event.title}</strong><br>${event.date}</a>`);
+            
         });        
         
         // Add click event to the map
