@@ -1,29 +1,18 @@
-# CSC1118 template repo
+# 📍 PinPoint – CSC1118 Project
 
-This is a template for CSC1118 projects.
+This is the official repository for our CSC1118 group project, **PinPoint**: a location-based event planning and discovery app using Django, Leaflet.js, and OpenStreetMap data.
 
-## 1. Create your repo
+##  Team
+- Michael Beirne-Ponomarev (Student no: 21493754)
+- Robert Maloney (Student no: 21357483)
 
-One person from your project team should fork this repo, then add other teammates as project members on GitLab.
+## Supervisor
+- Sahraoui Dhelim
 
-## 2. Name your repo appropriately
+---
 
-The name of your project repo must be of the form `2025-csc1118-XXXXXXX`, where "`XXXXXXX`"
-should be replaced with your usernames (e.g. `2025-csc1118-sblott-pclarke`).
-
-It is the *name of your repo* which matters (not the name of your project).
-
-You can change the name of your repo on GitLab under:
-
-- Settings / General / Advanced / Change path
-
-It looks like this:
-
-![change-repo-path](./res/repo-change-path2023.png "Change repo path.")
-
-After you have read this file, you
-should replace all of this content with a README describing your own project.
-
-## Additional resources
-
-- Repo [hygiene](https://gitlab.computing.dcu.ie/sblott/local-gitlab-documentation/blob/master/repo-hygiene.md)
+##  Features
+-  Interactive map using Leaflet.js
+-  Click to create events at any location
+-  Invite friends and manage RSVPs
+-  Search for nearby places (e.g. cafés, libraries) using OpenStreetMap’s Overpass API
