@@ -20,16 +20,21 @@
 
       </div>
     </div>
-  </div>
+</div>
 
-    <div class="container">
-        <div class="map-container position-relative">
-            <div id="map" style="height: 500px;"></div>
-            <button id="helpBtn" class="btn btn-sm btn-light position-absolute" style="top: 15px; right: 15px; z-index: 1000;"> Help </button>
-        </div>
+<div id="searchContainer">
+    <input type="text" id="placeSearch" placeholder="Search for nearby places...">
+    <button id="searchBtn">Search</button>
+</div>
+      
+<div class="container">
+    <div class="map-container position-relative">
+        <div id="map" style="height: 500px;"></div>
+        <button id="helpBtn" class="btn btn-sm btn-light position-absolute" style="top: 15px; right: 15px; z-index: 1000;"> Help </button>
     </div>
+</div>
 
-    <!-- Map Script -->
+    <!-- Map + Extras Script -->
 
     <script>
         // Initialize the map centered at Dublin City University
@@ -58,9 +63,9 @@
                 iconSize: [32, 32],
                 iconAnchor: [16, 32],
                 popupAnchor: [0, -32]  
-            })
+            });
 
-            const marker = L.marker([event.lat, event.lng], { icon: eventIcon }).addTo(map);
+            const marker = L.marker([event.lat, event.lng], { icon: markerIcon }).addTo(map);
             marker.bindPopup(`<a href="${event.url}"><strong>${event.title}</strong><br>${event.date}</a>`);
             
         });        
@@ -86,59 +91,157 @@
                    style="color:blue; text-decoration:underline;">Create Event Here</a>
             `).openPopup();
         });
-    </script>
 
-    <!-- Tutorial Script-->
-
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const tutorialSteps = [
-        "Hello and welcome to PinPoint, your new best pal for organising events!", 
-        "Our app is centered around this map in the middle. Click on the map to select a location and create a new event!", 
-        "But first you might want to add some more users! Connect with fellow PinPoint users via the 'friends' tab in the bottom left. You can always return here after using the 'Home' button in the center", 
-        "After you create your event, find it in an assorted list in the 'Pin' tab next to your friends!", 
-        "Existing events you've created or been invited to are also marked on your map with pins. Click on them to view more details.", 
-        "You can return to this guide anytime by visiting the Help section."
-        ];
-    
-        let currentStep = 0;
-        const modal = new bootstrap.Modal(document.getElementById('tutorialModal'));
-        const stepContainer = document.getElementById('tutorial-step');
-        const nextBtn = document.getElementById('nextBtn');
-        const helpBtn = document.getElementById('helpBtn');
-        const skipBtn = document.getElementById('skipBtn');
+        // Tutorial script
+        document.addEventListener("DOMContentLoaded", function () {
+            const tutorialSteps = [
+            "Hello and welcome to PinPoint, your new best pal for organising events!", 
+            "Our app is centered around this map in the middle. Click on the map to select a location and create a new event!", 
+            "But first you might want to add some more users! Connect with fellow PinPoint users via the 'friends' tab in the bottom left. You can always return here after using the 'Home' button in the center", 
+            "After you create your event, find it in an assorted list in the 'Pin' tab next to your friends!", 
+            "Existing events you've created or been invited to are also marked on your map with pins. Click on them to view more details.", 
+            "You can return to this guide anytime by visiting the Help section."
+            ];
+        
+            let currentStep = 0;
+            const modal = new bootstrap.Modal(document.getElementById('tutorialModal'));
+            const stepContainer = document.getElementById('tutorial-step');
+            const nextBtn = document.getElementById('nextBtn');
+            const helpBtn = document.getElementById('helpBtn');
+            const skipBtn = document.getElementById('skipBtn');
 
 
-        function showStep(stepIndex) {
-            stepContainer.innerText = tutorialSteps[stepIndex];
-            nextBtn.innerText = stepIndex === tutorialSteps.length - 1 ? "Finish" : "Next";
-        }
-    
-        nextBtn.addEventListener("click", function () {
-            if (currentStep < tutorialSteps.length - 1) {
-                currentStep++;
+            function showStep(stepIndex) {
+                stepContainer.innerText = tutorialSteps[stepIndex];
+                nextBtn.innerText = stepIndex === tutorialSteps.length - 1 ? "Finish" : "Next";
+            }
+        
+            nextBtn.addEventListener("click", function () {
+                if (currentStep < tutorialSteps.length - 1) {
+                    currentStep++;
+                    showStep(currentStep);
+                } else {
+                    modal.hide();
+                    localStorage.setItem("tutorialCompleted", "true");
+                }
+            });
+
+            skipBtn.addEventListener("click", function () {
+            localStorage.setItem("tutorialCompleted", "true");
+            modal.hide();
+            });
+        
+            helpBtn.addEventListener("click", function () {
+                currentStep = 0;
                 showStep(currentStep);
+                modal.show();
+            });
+        
+            if (!localStorage.getItem("tutorialCompleted")) {
+                showStep(currentStep);
+                modal.show();
+            }
+
+            
+        });
+
+        // Search bar & User
+        
+        let userLat, userLon;
+        let userMarker, accuracyCircle;
+        let placeMarkers = [];
+
+        const searchBtn = document.getElementById("searchBtn");
+
+        document.getElementById("searchBtn").addEventListener("click", () => {
+            const queryType = document.getElementById("placeSearch").value.toLowerCase();
+            if (userLat && userLon && queryType) {
+                searchNearby(queryType);
             } else {
-                modal.hide();
-                localStorage.setItem("tutorialCompleted", "true");
+                locateAndSearch(queryType);
             }
         });
 
-        skipBtn.addEventListener("click", function () {
-        localStorage.setItem("tutorialCompleted", "true");
-        modal.hide();
-        });
-    
-        helpBtn.addEventListener("click", function () {
-            currentStep = 0;
-            showStep(currentStep);
-            modal.show();
-        });
-    
-        if (!localStorage.getItem("tutorialCompleted")) {
-            showStep(currentStep);
-            modal.show();
+        function locateAndSearch(queryType) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    userLat = position.coords.latitude;
+                    userLon = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+
+                    if (userMarker) {
+                        map.removeLayer(userMarker);
+                        map.removeLayer(accuracyCircle);
+                    }
+
+                    userMarker = L.circleMarker([userLat, userLon], {
+                        radius: 8,
+                        color: '#3388ff',
+                        fillColor: '#3388ff',
+                        fillOpacity: 1
+                    }).addTo(map);
+
+                    accuracyCircle = L.circle([userLat, userLon], {
+                        radius: accuracy,
+                        color: '#3388ff',
+                        fillColor: '#3388ff',
+                        fillOpacity: 0.2
+                    }).addTo(map);
+
+                    map.setView([userLat, userLon], 15);
+                    searchNearby(queryType);
+                }, () => {
+                    alert("Failed to retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
         }
-    });
+
+        function searchNearby(type) {
+        // Clear old markers
+        placeMarkers.forEach(marker => map.removeLayer(marker));
+        placeMarkers = [];
+
+        const query = `
+            [out:json];
+            (
+                node["amenity"="${type}"](around:1000,${userLat},${userLon});
+            );
+            out;
+        `;
+
+        fetch("https://overpass-api.de/api/interpreter", {
+            method: "POST",
+            body: query
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.elements.length) {
+                alert(`No nearby ${type}s found.`);
+                return;
+            }
+
+            data.elements.forEach(place => {
+                const lat = place.lat;
+                const lon = place.lon;
+                const name = place.tags.name || "Unnamed " + type;
+
+                const marker = L.marker([lat, lon]).addTo(map);
+
+                marker.bindPopup(`
+                    <strong>${name}</strong><br>
+                    <a href="/create-event/?latitude=${lat}&longitude=${lon}&name=${encodeURIComponent(name)}" 
+                    style="color:blue; text-decoration:underline;">Create Event Here</a>
+                `);
+
+                placeMarkers.push(marker);
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error fetching places.");
+        });
+    }
     </script>
 {% endblock %}
