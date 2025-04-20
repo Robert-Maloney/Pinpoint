@@ -9,9 +9,6 @@
                 <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ event.name }}&dates={{ event.start_time|date:"Ymd\\THis\\Z" }}/{{ event.end_time|date:"Ymd\\THis\\Z" }}&details={{ event.description }}&location={{ event.latitude }},{{ event.longitude }}" target="_blank" class="btn btn-outline-light btn-sm">
                     Add to Google Calendar
                 </a>
-                <a href="https://www.google.com/maps/search/?api=1&query={{ event.latitude }},{{ event.longitude }}" target="_blank" class="btn btn-outline-light btn-sm">
-                    View on Google Maps
-                </a>
             </div>
 
             <!-- Event  -->
@@ -51,7 +48,7 @@
                         {% if rsvp.status == "no" %} {{ rsvp.user.username }}{% if not forloop.last %},{% endif %}{% endif %}
                     {% endfor %}
                 </p>
-                <p><strong class="text-warning">Maybe:</strong>
+                <p><strong class="text-warning">Tentative:</strong>
                     {% for rsvp in all_rsvps %}
                         {% if rsvp.status == "maybe" %} {{ rsvp.user.username }}{% if not forloop.last %},{% endif %}{% endif %}
                     {% endfor %}
@@ -85,6 +82,12 @@
                 <a href="{% url 'event_chat' event.id %}" class="btn btn-outline-info btn-sm mb-2">Chat Link</a><br>
                 <a href="{% url 'event_list' %}" class="text-light">Back to Events</a>
             </div>
+
+            {% if user == event.created_by %}
+            <div class="d-flex justify-content-center mt-2">
+                <a href="{% url 'edit_event' event.id %}" class="btn btn-warning">Edit Event</a>
+            </div>
+            {% endif %}
 
             {% if user == event.created_by %}
                 <form method="POST" action="{% url 'delete_event' event.id %}" onsubmit="return confirm('Are you sure you want to delete this event?');">

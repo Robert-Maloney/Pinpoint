@@ -44,7 +44,7 @@
     let placeMarkers = [];
     let userLat;
     let userLon;
-    const events = {{ events_json|safe }}; // Allows pins to be placed + events to appear - ignore the error
+    const events = {{ events_json | safe }}; // Allows pins to be placed + events to appear - ignore the error
 
     function initializeMap(lat, lon) {
         map = L.map('map').setView([lat, lon], 13);

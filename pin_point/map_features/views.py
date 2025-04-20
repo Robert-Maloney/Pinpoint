@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
+from django.views import View
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -134,6 +135,24 @@ def event_detail(request, event_id):
     return render(request, 'event_detail.html', {'event': event, 'user_rsvp': user_rsvp, 'all_rsvps': all_rsvps, "event_has_ended": event_has_ended, "memories": memories})
 
 @login_required
+def edit_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    # Only the creator can edit
+    if request.user != event.created_by:
+        return redirect('event_detail', event_id=event.id)
+
+    if request.method == 'POST':
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            return redirect('event_detail', event_id=event.id)
+    else:
+        form = EventForm(instance=event)
+
+    return render(request, 'edit_event.html', {'form': form, 'event': event})
+
+@login_required
 def event_chat(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     return render(request, 'event_chat.html', {'event': event})
@@ -232,3 +251,8 @@ def marketing_dashboard(request):
       "chat_activity": chat_activity,
    }
    return render(request, "marketing_dashboard.html", context)
+
+class LogoutViewGET(View):
+    def get(self, request):
+        logout(request)
+        return redirect('login')
