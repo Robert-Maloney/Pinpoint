@@ -85,6 +85,12 @@ class Message(models.Model):
    def __str__(self):
       return f"{self.user} at {self.timestamp}: {self.message}"
    
+class ChatImage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='chat_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
 class FavouriteLocation(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
    name = models.CharField(max_length=255)
