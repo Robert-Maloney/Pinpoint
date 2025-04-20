@@ -118,9 +118,20 @@ def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     user_rsvp = RSVP.objects.filter(user=request.user, event=event).first()
 
-    all_rsvps = RSVP.objects.filter(event=event) if request.user == event.created_by else None
+    all_rsvps = RSVP.objects.filter(event=event)
 
-    return render(request, 'event_detail.html', {'event': event, 'user_rsvp': user_rsvp, 'all_rsvps': all_rsvps})
+    event_has_ended = event.end_time < now()
+    memories = event.memories.all()
+
+    if request.method == "POST" and event_has_ended and request.FILES.get("image"):
+        EventPhoto.objects.create(
+            event=event,
+            user=request.user,
+            image=request.FILES["image"]
+        )
+        return redirect('event_detail', event_id=event.id)
+
+    return render(request, 'event_detail.html', {'event': event, 'user_rsvp': user_rsvp, 'all_rsvps': all_rsvps, "event_has_ended": event_has_ended, "memories": memories})
 
 @login_required
 def event_chat(request, event_id):
@@ -195,3 +206,29 @@ def remove_friend(request, user_id):
     user.friends.remove(friend)
     friend.friends.remove(user)
     return redirect('friends_page')
+
+def settings_view(request):
+   if request.method == 'POST':
+      user = request.user
+      user.is_marketing_user = 'is_marketing_user' in request.POST
+      user.save()
+      return redirect('settings')
+   
+   return render(request, 'settings.html', {'user': request.user})
+
+@login_required
+def marketing_dashboard(request):
+   user = request.user
+   if not user.is_marketing_user:
+      return redirect("home")
+
+   events = Event.objects.filter(created_by=user)
+   rsvp_stats = {e.id: RSVP.objects.filter(event=e).count() for e in events}
+   chat_activity = {e.id: Message.objects.filter(event=e).count() for e in events}
+
+   context = {
+      "events": events,
+      "rsvp_stats": rsvp_stats,
+      "chat_activity": chat_activity,
+   }
+   return render(request, "marketing_dashboard.html", context)

@@ -25,10 +25,13 @@ urlpatterns = [
     path('profile/', views.user_profile, name='my_profile'),
     path('profile/<int:user_id>/', views.view_profile, name='friend_profile'),
     path('profile/edit/', edit_profile, name='edit_profile'),
+    path("settings/", views.settings_view, name="settings"),
 
     path('friends/', views.friends_page, name='friends_page'),
     path('friends/send/<int:user_id>/', views.send_friend_request, name='send_friend_request'),
     path('friends/accept/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
     path('friends/decline/<int:request_id>/', views.decline_friend_request, name='decline_friend_request'),
     path('friends/remove/<int:user_id>/', views.remove_friend, name='remove_friend'),
+
+    path("marketing/dashboard/", views.marketing_dashboard, name="marketing_dashboard"),
 ]
