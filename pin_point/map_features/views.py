@@ -74,7 +74,7 @@ def edit_profile(request):
     
     return render(request, 'edit_profile.html', {'form': form})
 
-# Event Create Views
+# Event Related Views
 @login_required
 def event_create(request):
     favourites = FavouriteLocation.objects.filter(user=request.user)
@@ -163,8 +163,17 @@ def user_chat_list(request):
 
 @login_required
 def rsvp_event(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    return redirect('event_detail', event_id=event.id)
+    event = get_object_or_404(Event, pk=event_id)
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        if request.user == event.created_by:
+            return redirect('event_detail', event_id=event_id)
+
+        rsvp, created = RSVP.objects.get_or_create(user=request.user, event=event)
+        rsvp.status = status
+        rsvp.save()
+
+    return redirect('event_detail', event_id=event_id)
 
 @login_required
 def delete_event(request, event_id):
