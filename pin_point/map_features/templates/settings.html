@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Settings</h2>
+<form method="POST">
+   {% csrf_token %}
+   <label>
+      <input type="checkbox" name="is_marketing_user" {% if user.is_marketing_user %}checked{% endif %}>
+      Enable Marketing/Event Leader Profile
+   </label><br><br>
+   <button type="submit">Save Settings</button>
+</form>
+
+{% if user.is_marketing_user %}
+   <hr>
+   <h3>Marketing Tools</h3>
+   <ul>
+      <li><a href="{% url 'marketing_dashboard' %}">Marketing Dashboard</a></li>
+      <li><a href="{% url 'create_event' %}">Create Event</a></li>
+   </ul>
+{% endif %}
+{% endblock %}

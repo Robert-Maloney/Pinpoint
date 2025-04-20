@@ -39,7 +39,6 @@
             </form>
             {% endif %}
             
-            {% if all_rsvps is not None %}
             <div class="card p-3 bg-secondary mt-4">
                 <h5 class="mb-3">RSVP Responses</h5>
                 <p class="mb-2"><strong class="text-success">Yes:</strong>
@@ -57,6 +56,28 @@
                         {% if rsvp.status == "maybe" %} {{ rsvp.user.username }}{% if not forloop.last %},{% endif %}{% endif %}
                     {% endfor %}
                 </p>
+            </div>
+            
+            
+            {% if event_has_ended %}
+            <div class="alert alert-info mt-4">
+                This event has ended. Share your memories below!
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label class="form-label">Upload a photo memory:</label>
+                <input type="file" name="image" class="form-control mb-2" required>
+                <button type="submit" class="btn btn-primary">Add Photo</button>
+            </form>
+
+            <div class="row mt-4">
+                {% for memory in memories %}
+                <div class="col-md-4 mb-3">
+                    <img src="{{ memory.image.url }}" alt="Memory" class="img-fluid rounded shadow">
+                    <small class="text-muted">Uploaded by {{ memory.user.username }}</small>
+                </div>
+                {% endfor %}
             </div>
             {% endif %}
 

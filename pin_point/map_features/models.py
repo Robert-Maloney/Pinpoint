@@ -18,6 +18,7 @@ class User(AbstractUser):
       null=True
    )
    friends = models.ManyToManyField("self", blank=True, symmetrical=True)
+   is_marketing_user = models.BooleanField(default=False)
 
    def get_profile_photo(self):
       if self.profile_photo:
@@ -65,6 +66,12 @@ class Event(models.Model):
    
    def __str__(self):
       return self.name
+
+class EventPhoto(models.Model):
+   event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='memories')
+   user = models.ForeignKey(User, on_delete=models.CASCADE)
+   image = models.ImageField(upload_to='event_memories/')
+   timestamp = models.DateTimeField(auto_now_add=True)
 
 class Message(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)

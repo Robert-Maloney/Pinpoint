@@ -7,6 +7,7 @@
     <title>PinPoint</title>
 
     {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'icons/favicon.ico' %}">
 
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -53,7 +54,7 @@
         <a href="{% url 'event_list' %}"><img src="{% static 'icons/pin.png' %}" alt="Pin"></a>
         <a href="{% url 'index' %}"><img src="{% static 'icons/home.png' %}" alt="Home"></a>
         <a href="{% url 'user_chat_list' %}"><img src="{% static 'icons/chat.png' %}" alt="Chat"></a>
-        <a href="#"><img src="{% static 'icons/gallery.png' %}" alt="Gallery"></a>
+        <a href="{% url 'settings' %}"><img src="{% static 'icons/settings.png' %}" alt="Setting"></a>
     </div>
 
         
