@@ -4,7 +4,7 @@ from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.utils.timezone import now
+from django.utils.timezone import now, localtime
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from .models import *
@@ -30,7 +30,7 @@ def index(request):
             "lng": e.longitude,
             "url": f"/events/{e.id}/",
             "ongoing": e.start_time <= now() <= e.end_time,
-            "date": e.start_time.strftime("%Y-%m-%d %H:%M"),
+            "date": localtime(e.start_time).strftime("%a, %b %d %Y %H:%M"),
             "end_time": e.end_time.strftime("%Y-%m-%d %H:%M"),
         }
         for e in events if e.latitude and e.longitude
@@ -90,7 +90,8 @@ def event_create(request):
     else:
         latitude = request.GET.get('latitude', '')
         longitude = request.GET.get('longitude', '')
-        form = EventForm(initial={'latitude': latitude, 'longitude': longitude})
+        place_name = request.GET.get('name', '')
+        form = EventForm(initial={'latitude': latitude, 'longitude': longitude, 'location_name': place_name, 'name': place_name})
         form.fields['invitees'].queryset = request.user.friends.all()
 
     return render(request, 'event_create.html', {'form': form, 'favourites': favourites})
@@ -105,7 +106,6 @@ def event_list(request):
 
     upcoming_events = user_events.filter(end_time__gte=now_time)
     past_events = user_events.filter(end_time__lt=now_time)
-
 
     return render(request, 'event_list.html', {
         'upcoming_events': upcoming_events,
