@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="card bg-dark text-white mb-4">
+                    <div class="card-header">
+                        <h3>Create Public Business Event</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="event-map" style="height: 300px;"></div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Click on the map to select a location for your event
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-5">
+                <div class="card bg-dark text-white">
+                    <div class="card-header">
+                        <h3>Event Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            <!-- Only show these specific fields -->
+                            <div class="form-group mb-3">
+                                <label for="id_name">Event Name</label>
+                                {{ form.name }}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="id_description">Description</label>
+                                {{ form.description }}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="id_location_name">Location Name</label>
+                                {{ form.location_name }}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="id_start_time">Start Time</label>
+                                {{ form.start_time }}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="id_end_time">End Time</label>
+                                {{ form.end_time }}
+                            </div>
+                            
+                            <!-- Business Showcase section -->
+                            <div class="form-group mb-3">
+                                <div class="card bg-secondary">
+                                    <div class="card-header">
+                                        Business Showcase
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="id_in_showcase" name="in_showcase">
+                                            <label class="form-check-label" for="id_in_showcase">
+                                                Add to Business Showcase
+                                            </label>
+                                        </div>
+                                        <small class="form-text text-light">
+                                            Promote this event in the Business Showcase. Showcased events appear with special pins on the map.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tag selection section -->
+                            <div class="form-group mb-3">
+                                <label for="id_tags">Event Tags</label>
+                                <div class="tag-selector mb-2">
+                                    <input type="text" id="tag-input" class="form-control mb-2" placeholder="Add custom tag...">
+                                    <div class="preset-tags mb-2">
+                                        <button type="button" class="btn btn-sm btn-outline-primary tag-btn m-1" data-tag="Food">Food</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary tag-btn m-1" data-tag="Music">Music</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary tag-btn m-1" data-tag="Business">Business</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary tag-btn m-1" data-tag="Networking">Networking</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary tag-btn m-1" data-tag="Workshop">Workshop</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary tag-btn m-1" data-tag="Conference">Conference</button>
+                                    </div>
+                                </div>
+                                <div id="selected-tags" class="mb-2"></div>
+                            </div>
+                            
+                            <!-- Hidden fields -->
+                            {{ form.latitude }}
+                            {{ form.longitude }}
+                            {{ form.tags }}
+                            {{ form.is_public }}
+                            {{ form.invitees }}
+                            <input type="hidden" name="in_showcase" id="hidden_in_showcase" value="True">
+                            
+                            <button type="submit" class="btn btn-primary w-100">Create Public Event</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let marker;
+        let selectedTags = [];
+        
+        // Initialize the map
+        function initializeMap() {
+            map = L.map('event-map').setView([53.3858, -6.2576], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Get parameters from URL if available
+            const params = new URLSearchParams(window.location.search);
+            const latitude = params.get('latitude');
+            const longitude = params.get('longitude');
+            const place_name = params.get('name');
+            
+            // If coordinates are provided in URL, set marker
+            if (latitude && longitude) {
+                setMarkerAt(latitude, longitude);
+                if (place_name) {
+                    document.getElementById('id_location_name').value = place_name;
+                    document.getElementById('id_name').value = place_name;
+                }
+            } else {
+                // Try to get user's location
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        position => {
+                            map.setView([position.coords.latitude, position.coords.longitude], 13);
+                        },
+                        error => console.error("Error getting location:", error)
+                    );
+                }
+            }
+            
+            // Set map click handler
+            map.on('click', function(e) {
+                setMarkerAt(e.latlng.lat, e.latlng.lng);
+            });
+        }
+        
+        function setMarkerAt(lat, lng) {
+            // Update form values
+            document.getElementById('id_latitude').value = lat;
+            document.getElementById('id_longitude').value = lng;
+            
+            // Update or create marker
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            
+            marker = L.marker([lat, lng]).addTo(map);
+            marker.bindPopup(`<b>Event Location</b><br>Lat: ${lat}<br>Lng: ${lng}`).openPopup();
+        }
+        
+        // Tags management
+        function updateTagsDisplay() {
+            const container = document.getElementById('selected-tags');
+            container.innerHTML = '';
+            
+            selectedTags.forEach(tag => {
+                const tagEl = document.createElement('span');
+                tagEl.classList.add('badge', 'bg-primary', 'me-1', 'mb-1');
+                tagEl.innerHTML = `${tag} <button type="button" class="btn-close btn-close-white" aria-label="Remove" onclick="removeTag('${tag}')"></button>`;
+                container.appendChild(tagEl);
+            });
+            
+            // Update hidden input with JSON string of tags
+            document.getElementById('id_tags').value = JSON.stringify(selectedTags);
+        }
+        
+        function addTag(tag) {
+            tag = tag.trim();
+            if (tag && !selectedTags.includes(tag)) {
+                selectedTags.push(tag);
+                updateTagsDisplay();
+            }
+        }
+        
+        function removeTag(tag) {
+            const index = selectedTags.indexOf(tag);
+            if (index > -1) {
+                selectedTags.splice(index, 1);
+                updateTagsDisplay();
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMap();
+            
+            // Set up tag input handlers
+            document.getElementById('tag-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addTag(this.value);
+                    this.value = '';
+                }
+            });
+            
+            // Set up preset tag buttons
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    addTag(this.getAttribute('data-tag'));
+                });
+            });
+            
+            // Set up showcase checkbox
+            document.getElementById('id_in_showcase').addEventListener('change', function() {
+                document.getElementById('hidden_in_showcase').value = this.checked ? 'True' : 'False';
+            });
+        });
+    </script>
+    {% else %}
+        <div class="container mt-5">
+            <div class="alert alert-warning">
+                <p>You must <a href="{% url 'login' %}">log in</a> to create a public event.</p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

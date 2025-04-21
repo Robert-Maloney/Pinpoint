@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>📊 Marketing Dashboard</h2>
-
+<br>
 {% for event in events %}
   <div class="event-card">
     <h3>{{ event.name }}</h3>
@@ -11,7 +11,7 @@
   </div>
   <hr>
 {% empty %}
-  <p>You haven't created any events yet. <a href="{% url 'create_event' %}">Create one now!</a></p>
+  <p>You haven't created any events yet. <a href="{% url 'public_create_event' %}">Create one now!</a></p>
 {% endfor %}
 
 {% endblock %}

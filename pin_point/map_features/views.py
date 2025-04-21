@@ -13,7 +13,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
-from .forms import UserSignupForm, EventForm
+from .forms import *
 
 import json 
 from django.http import JsonResponse
@@ -37,13 +37,15 @@ def index(request):
             "ongoing": e.start_time <= now() <= e.end_time,
             "date": localtime(e.start_time).strftime("%a, %b %d %Y %H:%M"),
             "end_time": e.end_time.strftime("%Y-%m-%d %H:%M"),
+            "tags": e.tags if hasattr(e, 'tags') and e.tags else [],
+            "in_showcase": e.in_showcase if hasattr(e, 'in_showcase') else False
         }
         for e in events if e.latitude and e.longitude
     ]
 
     return render(request, 'index.html', {
         "events_json": json.dumps(event_data)
-    })  # Main map view
+    })
 
 # User Related Views
 class UserSignupView(CreateView):
@@ -96,10 +98,55 @@ def event_create(request):
         latitude = request.GET.get('latitude', '')
         longitude = request.GET.get('longitude', '')
         place_name = request.GET.get('name', '')
-        form = EventForm(initial={'latitude': latitude, 'longitude': longitude, 'location_name': place_name, 'name': place_name})
+        form = EventForm(initial={
+            'latitude': latitude,
+            'longitude': longitude,
+            'location_name': place_name,
+            'name': place_name,
+            'is_public': False
+            })
         form.fields['invitees'].queryset = request.user.friends.all()
 
     return render(request, 'event_create.html', {'form': form, 'favourites': favourites})
+
+@login_required
+def public_event_create(request):
+    if request.method == "POST":
+        form = EventForm(request.POST)
+        
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.created_by = request.user
+            event.is_public = True
+            
+            # Handle tags
+            try:
+                import json
+                tag_data = request.POST.get('tags', '[]')
+                event.tags = json.loads(tag_data)
+            except:
+                event.tags = []
+            
+            event.in_showcase = request.POST.get('in_showcase') == 'True'    
+            event.save()
+            form.save_m2m()
+            return redirect('event_detail', event_id=event.id)
+    else:
+        latitude = request.GET.get('latitude', '')
+        longitude = request.GET.get('longitude', '')
+        place_name = request.GET.get('name', '')
+        form = EventForm(initial={
+            'latitude': latitude, 
+            'longitude': longitude, 
+            'location_name': place_name, 
+            'name': place_name,
+            'is_public': True,
+            'tags': '[]'
+        })
+        form.fields['invitees'] = request.user.friends.none()
+
+    return render(request, 'public_event_create.html', {'form': form})
+
 
 @login_required
 def event_list(request):
@@ -161,9 +208,23 @@ def event_chat(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     return render(request, 'event_chat.html', {'event': event})
 
+@login_required
 def user_chat_list(request):
-    events = Event.objects.filter(invitees=request.user)
-    return render(request, 'user_chat_list.html', {'events': events})
+    now_time = timezone.now()
+
+    user_events = Event.objects.filter(
+        Q(created_by=request.user) | Q(invitees=request.user)
+    ).distinct()
+
+    upcoming_events = user_events.filter(end_time__gte=now_time)
+    past_events = user_events.filter(end_time__lt=now_time)
+
+    return render(request, 'user_chat_list.html', {
+        'events': upcoming_events,
+        'past_events': past_events,
+        'now': now_time,
+    })
+
 
 @login_required
 def rsvp_event(request, event_id):
@@ -239,6 +300,7 @@ def remove_friend(request, user_id):
     friend.friends.remove(user)
     return redirect('friends_page')
 
+@login_required
 def settings_view(request):
    if request.method == 'POST':
       user = request.user

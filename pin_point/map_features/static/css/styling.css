@@ -264,16 +264,19 @@ form ul {
 
 /* Register Button */
 .signup-card button {
-   background-color: #007bff;
-   color: white;
-   font-weight: bold;
-   cursor: pointer;
-   transition: background 0.3s;
+   color: #ffffff; 
+   background-color: #696969;
+   border: #000000;
+   font-weight: bold; 
+   text-decoration: none;
 }
 
 .signup-card button:hover {
-   background-color: #0056b3;
+   color: #ffffff;
+   background-color: #3d3d3d;
 }
+
+.signup-card 
 
 /* Login Link */
 .signup-card p {
@@ -282,7 +285,7 @@ form ul {
 }
 
 .signup-card a {
-   color: #007bff;
+   color: #ffffff;
    text-decoration: none;
 }
 
@@ -374,18 +377,6 @@ form ul {
 }
 
 /* Modal styling  */
-.modal {
-   display: none;
-   position: fixed;
-   z-index: 1000;
-   left: 0;
-   top: 0;
-   width: 100%;
-   height: 100%;
-   overflow: auto;
-   background-color:#000;
-   backdrop-filter: blur(3px);
-}
 
 .modal-content {
    margin: auto;

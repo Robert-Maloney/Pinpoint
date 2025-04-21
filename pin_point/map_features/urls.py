@@ -35,4 +35,5 @@ urlpatterns = [
     path('friends/remove/<int:user_id>/', views.remove_friend, name='remove_friend'),
 
     path("marketing/dashboard/", views.marketing_dashboard, name="marketing_dashboard"),
+    path('public-create-event/', views.public_event_create, name='public_create_event'),
 ]

@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
     {% if user.is_authenticated %}
     <div class="container d-flex justify-content-center align-items-center vh-100 pb-5">
@@ -13,7 +12,7 @@
             </form>
         </div>
     </div>
-    {% else %}
+        {% else %}
         <p>You must <a href="{% url 'login' %}">log in</a> to create an event.</p>
     {% endif %}
 {% endblock %}
