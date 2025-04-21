@@ -48,13 +48,12 @@ function sendMessage() {
     const message = input.value.trim();
     const files = imageInput.files;
 
-    // Send text message if available
     if (message) {
         ws.send(JSON.stringify({ 'message': message }));
-        input.value = ""; // Clear the text input
+        input.value = ""; // Clearing the text input
     }
 
-    // Send images if available
+    // Image Sending
     if (files.length > 0) {
         Array.from(files).forEach(file => {
             const reader = new FileReader();
@@ -67,7 +66,7 @@ function sendMessage() {
             reader.readAsDataURL(file);
         });
         
-        // Clear the file input and preview
+        // Clear the file input and show preview
         imageInput.value = "";
         document.getElementById("preview-container").innerHTML = "";
     }
@@ -127,10 +126,6 @@ function openModal(src) {
         modalImg.style.maxWidth = '95vw';
         modalImg.style.maxHeight = '95vh';
         
-        // For high DPI displays
-        if (devicePixelRatio > 1) {
-            modalImg.style.imageRendering = 'crisp-edges';
-        }
     };
     img.src = src;
     // Prevent scrolling on the background when modal is open

@@ -58,7 +58,7 @@
         userLat = lat;
         userLon = lon;
 
-        // User location marker and accuracy circle
+        // User location marker and accuracy circle - Moved from out of function to inner
         userMarker = L.circleMarker([userLat, userLon], {
             radius: 8,
             color: '#3388ff',
@@ -205,41 +205,6 @@
             }
         });
 
-        function locateAndSearch(queryType) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    userLat = position.coords.latitude;
-                    userLon = position.coords.longitude;
-                    const accuracy = position.coords.accuracy;
-
-                    if (userMarker) {
-                        map.removeLayer(userMarker);
-                        map.removeLayer(accuracyCircle);
-                    }
-
-                    userMarker = L.circleMarker([userLat, userLon], {
-                        radius: 8,
-                        color: '#3388ff',
-                        fillColor: '#3388ff',
-                        fillOpacity: 1
-                    }).addTo(map);
-
-                    accuracyCircle = L.circle([userLat, userLon], {
-                        radius: 1500,
-                        color: '#3388ff',
-                        fillColor: '#3388ff',
-                        fillOpacity: 0.2
-                    }).addTo(map);
-
-                    map.setView([userLat, userLon], 15);
-                    searchNearby(queryType);
-                }, () => {
-                    alert("Failed to retrieve your location.");
-                });
-            } else {
-                alert("Geolocation is not supported by your browser.");
-            }
-        }   
 
         function searchNearby(type) {
         placeMarkers.forEach(marker => map.removeLayer(marker));

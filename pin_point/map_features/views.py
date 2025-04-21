@@ -9,9 +9,6 @@ from django.utils.timezone import now, localtime
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django.core.files.storage import default_storage
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
-from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from .forms import *
 
@@ -47,6 +44,7 @@ def index(request):
         "events_json": json.dumps(event_data)
     })
 
+
 # User Related Views
 class UserSignupView(CreateView):
     model = User
@@ -58,15 +56,18 @@ class UserSignupView(CreateView):
         login(self.request, user) 
         return redirect('/')
     
+
 @login_required
 def user_profile(request):
     user = request.user
     return render(request, 'profile.html', {'profile_user': user})
 
+
 @login_required
 def view_profile(request, user_id):
     profile_user = get_object_or_404(User, id=user_id)
     return render(request, 'profile.html', {'profile_user': profile_user})
+
 
 @login_required
 def edit_profile(request):
@@ -79,6 +80,7 @@ def edit_profile(request):
         form = UserSignupForm(instance=request.user)
     
     return render(request, 'edit_profile.html', {'form': form})
+
 
 # Event Related Views
 @login_required
@@ -108,6 +110,7 @@ def event_create(request):
         form.fields['invitees'].queryset = request.user.friends.all()
 
     return render(request, 'event_create.html', {'form': form, 'favourites': favourites})
+
 
 @login_required
 def public_event_create(request):
@@ -165,6 +168,7 @@ def event_list(request):
         'now': now_time,
     })
 
+
 @login_required
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -185,6 +189,7 @@ def event_detail(request, event_id):
 
     return render(request, 'event_detail.html', {'event': event, 'user_rsvp': user_rsvp, 'all_rsvps': all_rsvps, "event_has_ended": event_has_ended, "memories": memories})
 
+
 @login_required
 def edit_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -203,10 +208,12 @@ def edit_event(request, event_id):
 
     return render(request, 'edit_event.html', {'form': form, 'event': event})
 
+# Chat Related Views 
 @login_required
 def event_chat(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     return render(request, 'event_chat.html', {'event': event})
+
 
 @login_required
 def user_chat_list(request):
@@ -255,7 +262,6 @@ def delete_event(request, event_id):
 
 
 # Friend Views
-
 @login_required
 def friends_page(request):
     user = request.user
@@ -280,6 +286,7 @@ def send_friend_request(request, user_id):
     FriendRequest.objects.get_or_create(from_user=request.user, to_user=to_user)
     return JsonResponse({'status': 'sent'})
 
+
 def accept_friend_request(request, request_id):
     friend_request = get_object_or_404(FriendRequest, id=request_id)
     request.user.friends.add(friend_request.from_user)
@@ -287,10 +294,12 @@ def accept_friend_request(request, request_id):
     friend_request.delete()
     return redirect('friends_page')
 
+
 def decline_friend_request(request, request_id):
     friend_request = get_object_or_404(FriendRequest, id=request_id)
     friend_request.delete()
     return redirect('friends_page')
+
 
 @login_required
 def remove_friend(request, user_id):
@@ -299,6 +308,7 @@ def remove_friend(request, user_id):
     user.friends.remove(friend)
     friend.friends.remove(user)
     return redirect('friends_page')
+
 
 @login_required
 def settings_view(request):
@@ -309,6 +319,7 @@ def settings_view(request):
       return redirect('settings')
    
    return render(request, 'settings.html', {'user': request.user})
+
 
 @login_required
 def marketing_dashboard(request):
@@ -326,6 +337,7 @@ def marketing_dashboard(request):
       "chat_activity": chat_activity,
    }
    return render(request, "marketing_dashboard.html", context)
+
 
 class LogoutViewGET(View):
     def get(self, request):

@@ -69,7 +69,6 @@ a {
 }
 
 /* Bottom navigation style */
-
 .bottom-nav {
    display: flex;
    justify-content: space-around;
@@ -80,6 +79,7 @@ a {
    width: 100%;
    box-shadow: 0 -2px 5px rgba(255, 255, 255, 0.2);
 }
+
 .bottom-nav img {
    width: 50px;
    height: 50px;
@@ -111,7 +111,6 @@ a {
 }
 
 /* Map search style */
- 
 #placeSearch {
   padding: 6px;
   border-radius: 4px;
@@ -119,7 +118,6 @@ a {
 }
  
 /* Map style */
-
 .map-container {
    width: 100%;
    max-width: 600px;
@@ -138,7 +136,6 @@ a {
 
 
 /* Register Button Style */
-
 .btn-register {
    color: #ffffff; 
    font-weight: bold; 
@@ -150,7 +147,6 @@ a {
 }
 
 /* Login Button Style */
-
 .login-btn{
    color: #ffffff; 
    font-weight: bold; 
@@ -276,8 +272,6 @@ form ul {
    background-color: #3d3d3d;
 }
 
-.signup-card 
-
 /* Login Link */
 .signup-card p {
    margin-top: 15px;
@@ -295,7 +289,6 @@ form ul {
 
 /* Messaging */
 /* Chat Box */
-
 .chat-box-container {
    width: 100%;
    max-width: 600px;
@@ -377,7 +370,6 @@ form ul {
 }
 
 /* Modal styling  */
-
 .modal-content {
    margin: auto;
    display: block;

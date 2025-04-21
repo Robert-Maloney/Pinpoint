@@ -27,8 +27,6 @@
                     <div class="card-body">
                         <form method="POST">
                             {% csrf_token %}
-                            
-                            <!-- Only show these specific fields -->
                             <div class="form-group mb-3">
                                 <label for="id_name">Event Name</label>
                                 {{ form.name }}
@@ -111,8 +109,6 @@
         let map;
         let marker;
         let selectedTags = [];
-        
-        // Initialize the map
         function initializeMap() {
             map = L.map('event-map').setView([53.3858, -6.2576], 13);
             
@@ -120,14 +116,12 @@
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
-            
-            // Get parameters from URL if available
             const params = new URLSearchParams(window.location.search);
             const latitude = params.get('latitude');
             const longitude = params.get('longitude');
             const place_name = params.get('name');
             
-            // If coordinates are provided in URL, set marker
+            // If coordinates are provided in URL - They shouldn't be
             if (latitude && longitude) {
                 setMarkerAt(latitude, longitude);
                 if (place_name) {
@@ -146,18 +140,15 @@
                 }
             }
             
-            // Set map click handler
             map.on('click', function(e) {
                 setMarkerAt(e.latlng.lat, e.latlng.lng);
             });
         }
         
         function setMarkerAt(lat, lng) {
-            // Update form values
             document.getElementById('id_latitude').value = lat;
             document.getElementById('id_longitude').value = lng;
             
-            // Update or create marker
             if (marker) {
                 map.removeLayer(marker);
             }
@@ -166,7 +157,7 @@
             marker.bindPopup(`<b>Event Location</b><br>Lat: ${lat}<br>Lng: ${lng}`).openPopup();
         }
         
-        // Tags management
+        // Tags
         function updateTagsDisplay() {
             const container = document.getElementById('selected-tags');
             container.innerHTML = '';
@@ -178,7 +169,6 @@
                 container.appendChild(tagEl);
             });
             
-            // Update hidden input with JSON string of tags
             document.getElementById('id_tags').value = JSON.stringify(selectedTags);
         }
         
@@ -202,7 +192,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeMap();
             
-            // Set up tag input handlers
+            // Custom Tag
             document.getElementById('tag-input').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -211,14 +201,14 @@
                 }
             });
             
-            // Set up preset tag buttons
+            // Preset Tags
             document.querySelectorAll('.tag-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     addTag(this.getAttribute('data-tag'));
                 });
             });
             
-            // Set up showcase checkbox
+            // Showcase Checkbox
             document.getElementById('id_in_showcase').addEventListener('change', function() {
                 document.getElementById('hidden_in_showcase').value = this.checked ? 'True' : 'False';
             });
