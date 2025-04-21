@@ -1,7 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.views import LoginView, LogoutView
-from .views import UserSignupView, user_profile, edit_profile, index
+from django.contrib.auth.views import LoginView
+from .views import UserSignupView, user_profile, edit_profile, index, LogoutViewGET
 from . import views
 
 urlpatterns = [
@@ -12,11 +12,12 @@ urlpatterns = [
     path('ws/chat/<int:event_id>/', views.event_chat, name='event_chat'),
     path('events/chats/', views.user_chat_list, name='user_chat_list'),
     path('events/<int:event_id>/rsvp/', views.rsvp_event, name='rsvp_event'),
+    path('events/<int:event_id>/edit/', views.edit_event, name='edit_event'),
     path('events/<int:event_id>/delete/', views.delete_event, name='delete_event'),
 
     path('register/', UserSignupView.as_view(), name='register'),
     path('login/', LoginView.as_view(template_name='login.html'), name='login'),
-    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+    path('logout/', LogoutViewGET.as_view(), name='logout'),
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),

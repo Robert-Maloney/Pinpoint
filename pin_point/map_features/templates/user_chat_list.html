@@ -9,7 +9,7 @@
         <ul>
             {% for event in events %}
                 <li>
-                    <a href="{% url 'event_chat' event.id %}">{{ event.name }}</a> - {{ event.date_time|date:"D, M d Y H:i" }}
+                    <a href="{% url 'event_chat' event.id %}">{{ event.name }}</a> - {{ event.start_time|date:"D, M d Y H:i" }}
                 </li>
             {% endfor %}
         </ul>

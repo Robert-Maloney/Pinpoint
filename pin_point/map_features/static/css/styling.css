@@ -296,7 +296,7 @@ form ul {
 .chat-box-container {
    width: 100%;
    max-width: 600px;
-   height: 450px; 
+   height: 750px; 
    margin: 20px auto;
    border-radius: 10px;
    overflow: hidden;
@@ -310,7 +310,7 @@ form ul {
    border: 1px solid #ccc;
    padding: 10px;
    width: auto;
-   height: 300px;
+   height: 450px;
    overflow-y: auto;
    margin: 10px;  
 }
@@ -325,6 +325,28 @@ form ul {
    margin-bottom: 10px;
 }
 
+.message {
+   padding: 10px;
+   margin: 5px;
+   border-radius: 10px;
+   max-width: 60%;
+   word-wrap: break-word;
+}
+
+.message-left {
+   background-color: #f1f1f1;
+   text-align: left;
+   align-self: flex-start;
+}
+
+.message-right {
+   background-color: #007bff;
+   color: white;
+   text-align: right;
+   align-self: flex-end;
+   margin-left: auto;
+}
+
 /* Chat input field */
 .chat-message-input {
    width: 80%;
@@ -334,4 +356,62 @@ form ul {
    background-color: white; 
    color: black; 
    margin-right: 10px;
+}
+
+/* Chat image styling */
+.chat-img {
+   max-width: 150px;
+   max-height: 150px;
+   cursor: pointer;
+   border-radius: 8px;
+   margin: 5px 0;
+   object-fit: cover;
+   transition: transform 0.2s ease;
+}
+
+.chat-img:hover {
+   transform: scale(1.05);
+}
+
+/* Modal styling  */
+.modal {
+   display: none;
+   position: fixed;
+   z-index: 1000;
+   left: 0;
+   top: 0;
+   width: 100%;
+   height: 100%;
+   overflow: auto;
+   background-color:#000;
+   backdrop-filter: blur(3px);
+}
+
+.modal-content {
+   margin: auto;
+   display: block;
+   max-width: 85%;
+   max-height: 85vh;
+   position: relative;
+   top: 50%;
+   transform: translateY(-50%);
+   background-color: #000;
+}
+
+.close {
+   position: absolute;
+   top: 15px;
+   right: 25px;
+   color: #f1f1f1;
+   font-size: 40px;
+   font-weight: bold;
+   transition: 0.3s;
+   z-index: 1001;
+}
+
+.close:hover,
+.close:focus {
+   color: #bbb;
+   text-decoration: none;
+   cursor: pointer;
 }
