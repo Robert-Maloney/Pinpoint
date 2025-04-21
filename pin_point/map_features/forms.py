@@ -32,12 +32,13 @@ class EventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        fields = ['name', 'description', 'start_time', 'end_time', 'location_name', 'latitude', 'longitude', 'is_public', 'invitees']
+        fields = ['name', 'description', 'start_time', 'end_time', 'location_name', 'latitude', 'longitude', 'is_public', 'invitees', 'tags']
         widgets = {
             'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'latitude': forms.HiddenInput(),
             'longitude': forms.HiddenInput(),
+            'tags': forms.HiddenInput(),
         }
 
     def clean(self):

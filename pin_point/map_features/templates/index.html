@@ -58,7 +58,7 @@
         userLat = lat;
         userLon = lon;
 
-        // User location marker and accuracy circle
+        // User location marker and accuracy circle - Moved from out of function to inner
         userMarker = L.circleMarker([userLat, userLon], {
             radius: 8,
             color: '#3388ff',
@@ -77,17 +77,37 @@
         const today = new Date();
         events.forEach(event => {
             const markerIcon = new L.Icon({
-                iconUrl: event.ongoing ? '{% static "icons/ongoing_pin.png" %}' : '{% static "icons/pin.png" %}',
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32]
-            });
-
-            const marker = L.marker([event.lat, event.lng], { icon: markerIcon }).addTo(map);
-            marker.bindPopup(`<a href="${event.url}"><strong>${event.title}</strong><br>${event.date}</a>`);
+                iconUrl: event.in_showcase 
+                    ? '{% static "icons/showcase_pin.png" %}' 
+                    : event.ongoing 
+                        ? '{% static "icons/ongoing_pin.png" %}' 
+                        : '{% static "icons/pin.png" %}',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
         });
 
-        // Map click handler
+
+        const marker = L.marker([event.lat, event.lng], { icon: markerIcon }).addTo(map);
+        
+    
+        // Tag Badge
+        let tagsHtml = '';
+        if (event.tags && event.tags.length > 0) {
+            tagsHtml = '<div class="event-tags mt-1">';
+            event.tags.forEach(tag => {
+                tagsHtml += `<span class="badge bg-secondary me-1">${tag}</span>`;
+            });
+            tagsHtml += '</div>';
+        }
+    
+        marker.bindPopup(`
+            <a href="${event.url}"><strong>${event.title}</strong><br>${event.date}</a>
+            ${tagsHtml}
+        `);
+    });
+        
+        // Map Click
         map.on('click', function (e) {
             const latitude = e.latlng.lat.toFixed(5);
             const longitude = e.latlng.lng.toFixed(5);
@@ -132,6 +152,7 @@
                 "But first you might want to add some more users! Connect with fellow PinPoint users via the 'friends' tab in the bottom left. You can always return here after using the 'Home' button in the center",
                 "After you create your event, find it in an assorted list in the 'Pin' tab next to your friends!",
                 "Existing events you've created or been invited to are also marked on your map with pins. Click on them to view more details.",
+                "You can see different colour pins, White are your invited events, Red is ongoing and Yellow is public events that businesses have promoted.",
                 "You can return to this guide anytime by visiting the Help section."
             ];
 
@@ -184,41 +205,6 @@
             }
         });
 
-        function locateAndSearch(queryType) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    userLat = position.coords.latitude;
-                    userLon = position.coords.longitude;
-                    const accuracy = position.coords.accuracy;
-
-                    if (userMarker) {
-                        map.removeLayer(userMarker);
-                        map.removeLayer(accuracyCircle);
-                    }
-
-                    userMarker = L.circleMarker([userLat, userLon], {
-                        radius: 8,
-                        color: '#3388ff',
-                        fillColor: '#3388ff',
-                        fillOpacity: 1
-                    }).addTo(map);
-
-                    accuracyCircle = L.circle([userLat, userLon], {
-                        radius: 1500,
-                        color: '#3388ff',
-                        fillColor: '#3388ff',
-                        fillOpacity: 0.2
-                    }).addTo(map);
-
-                    map.setView([userLat, userLon], 15);
-                    searchNearby(queryType);
-                }, () => {
-                    alert("Failed to retrieve your location.");
-                });
-            } else {
-                alert("Geolocation is not supported by your browser.");
-            }
-        }   
 
         function searchNearby(type) {
         placeMarkers.forEach(marker => map.removeLayer(marker));
@@ -276,7 +262,16 @@
             alert("Error fetching places.");
         });
     }
+    
+    function closeModal() {
+    const modal = document.getElementById("imageModal");
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+    }
 
-    window.onload = locateAndInitMap;
+    window.onload = function() {
+    locateAndInitMap();
+    setupTutorial();
+};
 </script>
 {% endblock %}

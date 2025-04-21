@@ -1,11 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.conf import settings
-
 from datetime import datetime
-
-# Create your models here.
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -63,6 +59,8 @@ class Event(models.Model):
    is_public = models.BooleanField(default=True)
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="events")
    invitees = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="event_invitations", blank=True)
+   tags = models.JSONField(default=list, blank=True)
+   in_showcase = models.BooleanField(default=False)
    
    def __str__(self):
       return self.name
