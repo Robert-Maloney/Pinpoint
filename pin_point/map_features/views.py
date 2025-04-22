@@ -85,8 +85,6 @@ def edit_profile(request):
 # Event Related Views
 @login_required
 def event_create(request):
-    favourites = FavouriteLocation.objects.filter(user=request.user)
-
     if request.method == "POST":
         form = EventForm(request.POST)
         form.fields['invitees'].queryset = request.user.friends.all()
@@ -109,7 +107,7 @@ def event_create(request):
             })
         form.fields['invitees'].queryset = request.user.friends.all()
 
-    return render(request, 'event_create.html', {'form': form, 'favourites': favourites})
+    return render(request, 'event_create.html', {'form': form,})
 
 
 @login_required
